@@ -1,0 +1,11 @@
+/.hgignore
+
+/*.suo
+
+/*.user
+
+/.hg/*
+
+*/obj/*
+
+*/bin/*
