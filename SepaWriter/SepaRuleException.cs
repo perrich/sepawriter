@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SepaWriter
+namespace Perrich.SepaWriter
 {
     public class SepaRuleException : Exception
     {

@@ -8,8 +8,8 @@
     <ProjectGuid>{3967F847-B1B8-4F84-89AB-2D3E99343759}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SepaWriter</RootNamespace>
-    <AssemblyName>SepaWriter</AssemblyName>
+    <RootNamespace>Perrich.SepaWriter</RootNamespace>
+    <AssemblyName>Perrich.SepaWriter</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -52,7 +52,7 @@
     <Compile Include="Utils\XmlValidator.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="pain.001.001.03.xsd">
+    <EmbeddedResource Include="Xsd\pain.001.001.03.xsd">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Xml;
 
-namespace SepaWriter.Utils
+namespace Perrich.SepaWriter.Utils
 {
     public static class XmlElementExtension
     {

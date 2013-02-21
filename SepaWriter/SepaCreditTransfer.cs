@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Xml;
-using SepaWriter.Utils;
+using Perrich.SepaWriter.Utils;
 
-namespace SepaWriter
+namespace Perrich.SepaWriter
 {
     /// <summary>
     ///     Manage SEPA (Single Euro Payments Area) CreditTransfer for SEPA or international order.
@@ -19,17 +19,17 @@ namespace SepaWriter
         public string CategoryPurposeCode;
 
         /// <summary>
-        ///     Creation Date
+        ///     Creation Date (default is object creation date)
         /// </summary>
         public DateTime CreationDate;
 
         /// <summary>
-        ///     Debitor
+        ///     Debitor IBAN data
         /// </summary>
         public SepaIbanData Debitor;
 
         /// <summary>
-        ///     Debitor"s account ISO currency code (default is EUR)
+        ///     Debitor account ISO currency code (default is EUR)
         /// </summary>
         public string DebitorAccountCurrency = "EUR";
 
@@ -42,6 +42,9 @@ namespace SepaWriter
         /// </summary>
         protected string LocalInstrumentCode;
 
+        /// <summary>
+        ///     The Message identifier
+        /// </summary>
         public string MessageIdentification;
 
         /// <summary>
@@ -50,6 +53,10 @@ namespace SepaWriter
         protected int NumberOfTransactions = 0;
 
         protected decimal PaymentControlSum = 0;
+
+        /// <summary>
+        ///     The single Payment information identifier
+        /// </summary>
         public string PaymentInfoId;
 
         /// <summary>
@@ -58,7 +65,7 @@ namespace SepaWriter
         protected string PaymentMethod = "TRF";
 
         /// <summary>
-        ///     Requested Execution Date (default is Now)
+        ///     Requested Execution Date (default is object creation date)
         /// </summary>
         public DateTime RequestedExecutionDate;
 
@@ -108,10 +115,10 @@ namespace SepaWriter
         /// <summary>
         ///     Add a credit transfer transaction in euro
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="creditor"></param>
-        /// <param name="amount"></param>
-        /// <param name="remittanceInformation"></param>
+        /// <param name="id">The transaction unique identifier</param>
+        /// <param name="creditor">The creditor IBAN data</param>
+        /// <param name="amount">The amount</param>
+        /// <param name="remittanceInformation">The transaction comment</param>
         public void AddCreditTransfer(string id, SepaIbanData creditor, decimal amount,
                                       string remittanceInformation)
         {
@@ -121,27 +128,23 @@ namespace SepaWriter
         /// <summary>
         ///     Add a credit transfer transaction
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="creditor"></param>
-        /// <param name="amount"></param>
-        /// <param name="currency"></param>
-        /// <param name="remittanceInformation"></param>
+        /// <param name="id">The transaction unique identifier</param>
+        /// <param name="creditor">The creditor IBAN data</param>
+        /// <param name="amount">The amount</param>
+        /// <param name="currency">The currency in ISO 4217</param>
+        /// <param name="remittanceInformation">The transaction comment</param>
         public void AddCreditTransfer(string id, SepaIbanData creditor, decimal amount, string currency,
                                       string remittanceInformation)
         {
             var transfer = new SepaCreditTransferTransaction
                 {
                     Id = id,
-                    EndToEndId = MessageIdentification + "/" + NumberOfTransactions,
                     Currency = currency,
                     Amount = amount,
                     Creditor = creditor,
                     RemittanceInformation = remittanceInformation
                 };
-            Transactions.Add(transfer);
-            NumberOfTransactions++;
-            HeaderControlSum += transfer.Amount;
-            PaymentControlSum += transfer.Amount;
+            AddCreditTransfer(transfer);
         }
 
         /// <summary>

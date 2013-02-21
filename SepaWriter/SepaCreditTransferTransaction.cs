@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SepaWriter
+namespace Perrich.SepaWriter
 {
     public class SepaCreditTransferTransaction : ICloneable
     {
@@ -10,12 +10,12 @@ namespace SepaWriter
         public SepaIbanData Creditor;
 
         /// <summary>
-        ///     ISO currency code (default is EUR)
+        ///     ISO 4217 currency code (default is EUR)
         /// </summary>
         public string Currency = "EUR";
 
         /// <summary>
-        ///     Payment ID
+        ///     Payment Identifier
         /// </summary>
         public string Id;
 
@@ -23,6 +23,9 @@ namespace SepaWriter
         private string _endToEndId;
         private string _remittanceInformation;
 
+        /// <summary>
+        /// The Unique Identifier (it will always rewritten as "MessageIdentification/PositionInTransactionsList" by the SepaCreditTransfert)
+        /// </summary>
         public string EndToEndId
         {
             get { return _endToEndId; }
@@ -36,7 +39,7 @@ namespace SepaWriter
         }
 
         /// <summary>
-        ///     Remittance information
+        ///     Remittance information (free comment)
         /// </summary>
         public string RemittanceInformation
         {

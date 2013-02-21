@@ -5,7 +5,7 @@ using System.Xml;
 using System.Xml.Schema;
 using log4net;
 
-namespace SepaWriter.Utils
+namespace Perrich.SepaWriter.Utils
 {
     /// <summary>
     ///     Allow to validate XML against the known XSD.
@@ -19,7 +19,7 @@ namespace SepaWriter.Utils
         ///     XML Validator for Sepa Credit Transfert. Uses XSD in http://www.iso20022.org/documents/messages/pain/schemas/pain.001.001.03.zip
         ///     (see http://www.iso20022.org/full_catalogue.page)
         /// </summary>
-        public static XmlValidator SepaCreditTransferValidator = new XmlValidator("SepaWriter.pain.001.001.03.xsd");
+        public static XmlValidator SepaCreditTransferValidator = new XmlValidator("Perrich.SepaWriter.Xsd.pain.001.001.03.xsd");
 
         private readonly XmlSchema _xSchema;
         private bool _result;

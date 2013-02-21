@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 
-namespace SepaWriter.Test
+namespace Perrich.SepaWriter.Test
 {
     [TestFixture]
     public class SepaCreditTransferTransactionTest
