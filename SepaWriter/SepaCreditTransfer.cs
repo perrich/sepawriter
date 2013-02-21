@@ -153,12 +153,31 @@ namespace Perrich.SepaWriter
         /// <param name="transfer"></param>
         public void AddCreditTransfer(SepaCreditTransferTransaction transfer)
         {
+            if (transfer == null)
+                throw new ArgumentNullException("transfer");
+
+            CheckTransactionIdUnicity(transfer.Id);
             transfer = (SepaCreditTransferTransaction) transfer.Clone();
             transfer.EndToEndId = MessageIdentification + "/" + NumberOfTransactions;
             Transactions.Add(transfer);
             NumberOfTransactions++;
             HeaderControlSum += transfer.Amount;
             PaymentControlSum += transfer.Amount;
+        }
+
+        /// <summary>
+        /// Check If the id is not defined in others transactions excepts null values
+        /// </summary>
+        /// <param name="id"></param>
+        private void CheckTransactionIdUnicity(string id)
+        {
+            if (id == null)
+                return;
+
+            if (Transactions.Exists(transfert => transfert.Id != null && transfert.Id == id))
+            {
+                throw new SepaRuleException("Transaction Id '" + id + "' must be unique in a transfer.");
+            }
         }
 
         /// <summary>
