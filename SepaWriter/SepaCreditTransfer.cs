@@ -24,14 +24,14 @@ namespace Perrich.SepaWriter
         public DateTime CreationDate;
 
         /// <summary>
-        ///     Debitor IBAN data
+        ///     Debtor IBAN data
         /// </summary>
-        public SepaIbanData Debitor;
+        public SepaIbanData Debtor;
 
         /// <summary>
-        ///     Debitor account ISO currency code (default is EUR)
+        ///     Debtor account ISO currency code (default is EUR)
         /// </summary>
-        public string DebitorAccountCurrency = "EUR";
+        public string DebtorAccountCurrency = "EUR";
 
         protected decimal HeaderControlSum = 0;
         public string InitiatingPartyId;
@@ -116,24 +116,26 @@ namespace Perrich.SepaWriter
         ///     Add a credit transfer transaction in euro
         /// </summary>
         /// <param name="id">The transaction unique identifier</param>
+        /// <param name="endToEndId">The end to end identifier (if not filled, defined as MessageIdentification/PositionInTransactionsList")</param>
         /// <param name="creditor">The creditor IBAN data</param>
         /// <param name="amount">The amount</param>
         /// <param name="remittanceInformation">The transaction comment</param>
-        public void AddCreditTransfer(string id, SepaIbanData creditor, decimal amount,
+        public void AddCreditTransfer(string id, string endToEndId, SepaIbanData creditor, decimal amount,
                                       string remittanceInformation)
         {
-            AddCreditTransfer(id, creditor, amount, "EUR", remittanceInformation);
+            AddCreditTransfer(id, endToEndId, creditor, amount, "EUR", remittanceInformation);
         }
 
         /// <summary>
         ///     Add a credit transfer transaction
         /// </summary>
         /// <param name="id">The transaction unique identifier</param>
+        /// <param name="endToEndId">The end to end identifier (if not filled, defined as MessageIdentification/PositionInTransactionsList")</param>
         /// <param name="creditor">The creditor IBAN data</param>
         /// <param name="amount">The amount</param>
         /// <param name="currency">The currency in ISO 4217</param>
         /// <param name="remittanceInformation">The transaction comment</param>
-        public void AddCreditTransfer(string id, SepaIbanData creditor, decimal amount, string currency,
+        public void AddCreditTransfer(string id, string endToEndId, SepaIbanData creditor, decimal amount, string currency,
                                       string remittanceInformation)
         {
             var transfer = new SepaCreditTransferTransaction
@@ -144,6 +146,8 @@ namespace Perrich.SepaWriter
                     Creditor = creditor,
                     RemittanceInformation = remittanceInformation
                 };
+            if (endToEndId != null)
+                transfer.EndToEndId = endToEndId;
             AddCreditTransfer(transfer);
         }
 
@@ -156,9 +160,10 @@ namespace Perrich.SepaWriter
             if (transfer == null)
                 throw new ArgumentNullException("transfer");
 
-            CheckTransactionIdUnicity(transfer.Id);
             transfer = (SepaCreditTransferTransaction) transfer.Clone();
-            transfer.EndToEndId = MessageIdentification + "/" + NumberOfTransactions;
+            if (transfer.EndToEndId == null)
+                transfer.EndToEndId = MessageIdentification + "/" + (NumberOfTransactions +1);
+            CheckTransactionIdUnicity(transfer.Id, transfer.EndToEndId);
             Transactions.Add(transfer);
             NumberOfTransactions++;
             HeaderControlSum += transfer.Amount;
@@ -169,7 +174,8 @@ namespace Perrich.SepaWriter
         /// Check If the id is not defined in others transactions excepts null values
         /// </summary>
         /// <param name="id"></param>
-        private void CheckTransactionIdUnicity(string id)
+        /// <param name="endToEndId"></param>
+        private void CheckTransactionIdUnicity(string id, string endToEndId)
         {
             if (id == null)
                 return;
@@ -177,6 +183,11 @@ namespace Perrich.SepaWriter
             if (Transactions.Exists(transfert => transfert.Id != null && transfert.Id == id))
             {
                 throw new SepaRuleException("Transaction Id '" + id + "' must be unique in a transfer.");
+            }
+
+            if (Transactions.Exists(transfert => transfert.EndToEndId != null && transfert.EndToEndId == endToEndId))
+            {
+                throw new SepaRuleException("End to End Id '" + endToEndId + "' must be unique in a transfer.");
             }
         }
 
@@ -218,13 +229,13 @@ namespace Perrich.SepaWriter
                                                                  .NewElement("Cd", LocalInstrumentCode);
 
             pmtInf.NewElement("ReqdExctnDt", String.Format("{0:yyyy-MM-dd}", RequestedExecutionDate));
-            pmtInf.NewElement("Dbtr").NewElement("Nm", Debitor.Name);
+            pmtInf.NewElement("Dbtr").NewElement("Nm", Debtor.Name);
 
             XmlElement dbtrAcct = pmtInf.NewElement("DbtrAcct");
-            dbtrAcct.NewElement("Id").NewElement("IBAN", Debitor.Iban);
-            dbtrAcct.NewElement("Ccy", DebitorAccountCurrency);
+            dbtrAcct.NewElement("Id").NewElement("IBAN", Debtor.Iban);
+            dbtrAcct.NewElement("Ccy", DebtorAccountCurrency);
 
-            pmtInf.NewElement("DbtrAgt").NewElement("FinInstnId").NewElement("BIC", Debitor.Bic);
+            pmtInf.NewElement("DbtrAgt").NewElement("FinInstnId").NewElement("BIC", Debtor.Bic);
             pmtInf.NewElement("ChrgBr", "SLEV");
 
             // -- 3: Credit Transfer Transaction Information
@@ -232,7 +243,8 @@ namespace Perrich.SepaWriter
             {
                 XmlElement cdtTrfTxInf = pmtInf.NewElement("CdtTrfTxInf");
                 XmlElement pmtId = cdtTrfTxInf.NewElement("PmtId");
-                pmtId.NewElement("InstrId", transfer.Id);
+                if (transfer.Id != null)
+                    pmtId.NewElement("InstrId", transfer.Id);
                 pmtId.NewElement("EndToEndId", transfer.EndToEndId);
                 cdtTrfTxInf.NewElement("Amt")
                            .NewElement("InstdAmt", FormatAmount(transfer.Amount))

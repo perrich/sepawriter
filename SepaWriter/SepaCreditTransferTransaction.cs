@@ -24,7 +24,7 @@ namespace Perrich.SepaWriter
         private string _remittanceInformation;
 
         /// <summary>
-        /// The Unique Identifier (it will always rewritten as "MessageIdentification/PositionInTransactionsList" by the SepaCreditTransfert)
+        /// The Unique Identifier (if not defined, it's defined as "MessageIdentification/PositionInTransactionsList" by the SepaCreditTransfert)
         /// </summary>
         public string EndToEndId
         {
