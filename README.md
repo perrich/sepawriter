@@ -4,19 +4,31 @@ SepaWriter
 Manage SEPA (Single Euro Payments Area) CreditTransfer for SEPA or international order.
 Only one PaymentInformation is managed but it can manage multiple transactions. The debtor is common to all transactions.
 
+It follow "Customer Credit Transfer Initiation" <pain.001.001.03> defined in ISO 20022 but also some specific french rules (field used size != allowed size).
+
+English usage guide :
+http://www.swift.com/assets/corporates/documents/our_solution/implementing_your_project_2009_iso20022_usage_guide.pdf
+
+French usage guide :
+http://www.cfonb.org/Web/cfonb/cfonbmain.nsf/DocumentsByIDWeb/7JRDVV/$File/3-15%20Guide%20ISO20022%20remises%20informatisees%20d_ordres%20de%20paiement%2020100602%20virement%20V2.0_2010_06.pdf
+
+Sample
+---
 
 Sample for a quick simple transaction :
 ```csharp
 public class MySepaCreditTransfer
 {
-  private static SepaCreditTransfer GetSampleCreditTransfert(decimal amount, string bic, string iban, string name, string comment)
+  private static SepaCreditTransfer GetSampleCreditTransfert(decimal amount, string bic, string iban,
+    string name, string comment)
   {
       var transfert = new SepaCreditTransfer
       {
           MessageIdentification = "transferId",
           PaymentInfoId = "paymentInfo",
           InitiatingPartyName = "Your name",
-          Debtor = new SepaIbanData {Bic = "SOGEFRPPXXX", Iban = "FR7030002005500000157845Z02", Name = "My Corp"} // Your bank data
+          // Below, your bank data
+          Debtor = new SepaIbanData {Bic = "SOGEFRPPXXX", Iban = "FR7030002005500000157845Z02", Name = "My Corp"}          
       };
 
       transfert.AddCreditTransfer("Transaction#1", null,
@@ -31,7 +43,8 @@ public class MySepaCreditTransfer
 
   public MySepaCreditTransfer()
   {
-    var transfert = GetSampleCreditTransfert(123.45,  "AGRIFRPPXXX", "FR1420041010050500013M02606", "THEIR_NAME", "Payment sample");
+    var transfert = GetSampleCreditTransfert(123.45,  "AGRIFRPPXXX", "FR1420041010050500013M02606",
+      "THEIR_NAME", "Payment sample");
     transfert.Save("sample.xml");
   }
 }
@@ -39,8 +52,8 @@ public class MySepaCreditTransfer
 
 Used library:
 ---
-NUnit 2.6.2 for unit tests
-Log4net 2.11 for log (used in XML validator)
+- NUnit 2.6.2 for unit tests
+- Log4net 2.11 for log (used in XML validator)
 
 
 License:
