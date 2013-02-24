@@ -5,11 +5,6 @@ namespace Perrich.SepaWriter
     public class SepaCreditTransferTransaction : ICloneable
     {
         /// <summary>
-        ///     Creditor IBAN data
-        /// </summary>
-        public SepaIbanData Creditor;
-
-        /// <summary>
         ///     ISO 4217 currency code (default is EUR)
         /// </summary>
         public string Currency = "EUR";
@@ -20,11 +15,26 @@ namespace Perrich.SepaWriter
         public string Id;
 
         private decimal _amount;
+        private SepaIbanData _creditor;
         private string _endToEndId;
         private string _remittanceInformation;
 
         /// <summary>
-        /// The Unique Identifier (if not defined, it's defined as "MessageIdentification/PositionInTransactionsList" by the SepaCreditTransfert)
+        ///     Creditor IBAN data
+        /// </summary>
+        public SepaIbanData Creditor
+        {
+            get { return _creditor; }
+            set
+            {
+                if (!value.IsValid())
+                    throw new SepaRuleException("Creditor IBAN data are invalid.");
+                _creditor = value;
+            }
+        }
+
+        /// <summary>
+        ///     The Unique Identifier (if not defined, it's defined as "MessageIdentification/PositionInTransactionsList" by the SepaCreditTransfert)
         /// </summary>
         public string EndToEndId
         {
@@ -79,8 +89,8 @@ namespace Perrich.SepaWriter
 
         public object Clone()
         {
-            var row = (SepaCreditTransferTransaction)MemberwiseClone();
-            row.Creditor = (SepaIbanData)Creditor.Clone();
+            var row = (SepaCreditTransferTransaction) MemberwiseClone();
+            row.Creditor = (SepaIbanData) Creditor.Clone();
 
             return row;
         }

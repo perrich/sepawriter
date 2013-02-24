@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Text;
 using System.Xml;
 using Perrich.SepaWriter.Utils;
@@ -13,6 +12,8 @@ namespace Perrich.SepaWriter
     /// </summary>
     public class SepaCreditTransfer
     {
+        private const string EuroCurrency = "EUR";
+
         /// <summary>
         ///     Purpose of the transaction(s)
         /// </summary>
@@ -24,14 +25,9 @@ namespace Perrich.SepaWriter
         public DateTime CreationDate;
 
         /// <summary>
-        ///     Debtor IBAN data
-        /// </summary>
-        public SepaIbanData Debtor;
-
-        /// <summary>
         ///     Debtor account ISO currency code (default is EUR)
         /// </summary>
-        public string DebtorAccountCurrency = "EUR";
+        public string DebtorAccountCurrency = EuroCurrency;
 
         protected decimal HeaderControlSum = 0;
         public string InitiatingPartyId;
@@ -55,7 +51,7 @@ namespace Perrich.SepaWriter
         protected decimal PaymentControlSum = 0;
 
         /// <summary>
-        ///     The single Payment information identifier
+        ///     The single Payment information identifier (uses Message identifier if not defined)
         /// </summary>
         public string PaymentInfoId;
 
@@ -70,11 +66,26 @@ namespace Perrich.SepaWriter
         public DateTime RequestedExecutionDate;
 
         protected List<SepaCreditTransferTransaction> Transactions = new List<SepaCreditTransferTransaction>();
+        private SepaIbanData _debtor;
 
         public SepaCreditTransfer()
         {
             CreationDate = DateTime.Now;
             RequestedExecutionDate = CreationDate.Date;
+        }
+
+        /// <summary>
+        ///     Debtor IBAN data
+        /// </summary>
+        public SepaIbanData Debtor
+        {
+            get { return _debtor; }
+            set
+            {
+                if (!value.IsValid())
+                    throw new SepaRuleException("Debtor IBAN data are invalid.");
+                _debtor = value;
+            }
         }
 
         /// <summary>
@@ -113,45 +124,6 @@ namespace Perrich.SepaWriter
         }
 
         /// <summary>
-        ///     Add a credit transfer transaction in euro
-        /// </summary>
-        /// <param name="id">The transaction unique identifier</param>
-        /// <param name="endToEndId">The end to end identifier (if not filled, defined as MessageIdentification/PositionInTransactionsList")</param>
-        /// <param name="creditor">The creditor IBAN data</param>
-        /// <param name="amount">The amount</param>
-        /// <param name="remittanceInformation">The transaction comment</param>
-        public void AddCreditTransfer(string id, string endToEndId, SepaIbanData creditor, decimal amount,
-                                      string remittanceInformation)
-        {
-            AddCreditTransfer(id, endToEndId, creditor, amount, "EUR", remittanceInformation);
-        }
-
-        /// <summary>
-        ///     Add a credit transfer transaction
-        /// </summary>
-        /// <param name="id">The transaction unique identifier</param>
-        /// <param name="endToEndId">The end to end identifier (if not filled, defined as MessageIdentification/PositionInTransactionsList")</param>
-        /// <param name="creditor">The creditor IBAN data</param>
-        /// <param name="amount">The amount</param>
-        /// <param name="currency">The currency in ISO 4217</param>
-        /// <param name="remittanceInformation">The transaction comment</param>
-        public void AddCreditTransfer(string id, string endToEndId, SepaIbanData creditor, decimal amount, string currency,
-                                      string remittanceInformation)
-        {
-            var transfer = new SepaCreditTransferTransaction
-                {
-                    Id = id,
-                    Currency = currency,
-                    Amount = amount,
-                    Creditor = creditor,
-                    RemittanceInformation = remittanceInformation
-                };
-            if (endToEndId != null)
-                transfer.EndToEndId = endToEndId;
-            AddCreditTransfer(transfer);
-        }
-
-        /// <summary>
         ///     Add an existing credit transfer transaction
         /// </summary>
         /// <param name="transfer"></param>
@@ -162,7 +134,7 @@ namespace Perrich.SepaWriter
 
             transfer = (SepaCreditTransferTransaction) transfer.Clone();
             if (transfer.EndToEndId == null)
-                transfer.EndToEndId = MessageIdentification + "/" + (NumberOfTransactions +1);
+                transfer.EndToEndId = (PaymentInfoId ?? MessageIdentification) + "/" + (NumberOfTransactions + 1);
             CheckTransactionIdUnicity(transfer.Id, transfer.EndToEndId);
             Transactions.Add(transfer);
             NumberOfTransactions++;
@@ -171,7 +143,7 @@ namespace Perrich.SepaWriter
         }
 
         /// <summary>
-        /// Check If the id is not defined in others transactions excepts null values
+        ///     Check If the id is not defined in others transactions excepts null values
         /// </summary>
         /// <param name="id"></param>
         /// <param name="endToEndId"></param>
@@ -192,11 +164,36 @@ namespace Perrich.SepaWriter
         }
 
         /// <summary>
+        ///     Is Mandatory data are set ? In other case a SepaRuleException will be thrown
+        /// </summary>
+        private void CheckMandatoryData()
+        {
+            if (Transactions.Count == 0)
+            {
+                throw new SepaRuleException("At least one transaction is needed in a transfer.");
+            }
+            if (Debtor == null)
+            {
+                throw new SepaRuleException("The debtor is mandatory.");
+            }
+            if (string.IsNullOrEmpty(MessageIdentification))
+            {
+                throw new SepaRuleException("The message identification is mandatory.");
+            }
+            if (string.IsNullOrEmpty(InitiatingPartyName))
+            {
+                throw new SepaRuleException("The initial party name is mandatory.");
+            }
+        }
+
+        /// <summary>
         ///     Generate the XML structure
         /// </summary>
         /// <returns></returns>
         protected XmlDocument GenerateXml()
         {
+            CheckMandatoryData();
+
             var xml = new XmlDocument();
             xml.AppendChild(xml.CreateXmlDeclaration("1.0", Encoding.UTF8.BodyName, "yes"));
             var el = (XmlElement) xml.AppendChild(xml.CreateElement("Document"));
@@ -204,29 +201,29 @@ namespace Perrich.SepaWriter
             el.SetAttribute("xmlns", "urn:iso:std:iso:20022:tech:xsd:pain.001.001.03");
             el.NewElement("CstmrCdtTrfInitn");
 
-            // -- 1: Group Header
-            XmlElement grpHdr = ((XmlElement) xml.SelectSingleNode("//CstmrCdtTrfInitn")).NewElement("GrpHdr");
+            // Part 1: Group Header
+            XmlElement grpHdr = XmlUtils.GetFirstElement(xml, "CstmrCdtTrfInitn").NewElement("GrpHdr");
             grpHdr.NewElement("MsgId", MessageIdentification);
             grpHdr.NewElement("CreDtTm", String.Format("{0:yyyy-MM-dd\\THH:mm:ss}", CreationDate));
             grpHdr.NewElement("NbOfTxs", NumberOfTransactions);
-            grpHdr.NewElement("CtrlSum", FormatAmount(HeaderControlSum));
+            grpHdr.NewElement("CtrlSum", XmlUtils.FormatAmount(HeaderControlSum));
             grpHdr.NewElement("InitgPty").NewElement("Nm", InitiatingPartyName);
             if (InitiatingPartyId != null)
                 grpHdr.NewElement("InitgPty").NewElement("Id", InitiatingPartyId);
 
-            // -- 2: Payment Information
-            XmlElement pmtInf = ((XmlElement) xml.SelectSingleNode("//CstmrCdtTrfInitn")).NewElement("PmtInf");
-            pmtInf.NewElement("PmtInfId", PaymentInfoId);
+            // Part 2: Payment Information
+            XmlElement pmtInf = XmlUtils.GetFirstElement(xml, "CstmrCdtTrfInitn").NewElement("PmtInf");
+            pmtInf.NewElement("PmtInfId", PaymentInfoId ?? MessageIdentification);
             if (CategoryPurposeCode != null)
                 pmtInf.NewElement("CtgyPurp").NewElement("Cd", CategoryPurposeCode);
 
             pmtInf.NewElement("PmtMtd", PaymentMethod);
             pmtInf.NewElement("NbOfTxs", NumberOfTransactions);
-            pmtInf.NewElement("CtrlSum", FormatAmount(PaymentControlSum));
+            pmtInf.NewElement("CtrlSum", XmlUtils.FormatAmount(PaymentControlSum));
             pmtInf.NewElement("PmtTpInf").NewElement("SvcLvl").NewElement("Cd", "SEPA");
             if (LocalInstrumentCode != null)
-                ((XmlElement) xml.SelectSingleNode("//PmtTpInf")).NewElement("LclInstr")
-                                                                 .NewElement("Cd", LocalInstrumentCode);
+                XmlUtils.GetFirstElement(xml, "PmtTpInf").NewElement("LclInstr")
+                        .NewElement("Cd", LocalInstrumentCode);
 
             pmtInf.NewElement("ReqdExctnDt", String.Format("{0:yyyy-MM-dd}", RequestedExecutionDate));
             pmtInf.NewElement("Dbtr").NewElement("Nm", Debtor.Name);
@@ -238,7 +235,7 @@ namespace Perrich.SepaWriter
             pmtInf.NewElement("DbtrAgt").NewElement("FinInstnId").NewElement("BIC", Debtor.Bic);
             pmtInf.NewElement("ChrgBr", "SLEV");
 
-            // -- 3: Credit Transfer Transaction Information
+            // Part 3: Credit Transfer Transaction Information
             foreach (SepaCreditTransferTransaction transfer in Transactions)
             {
                 XmlElement cdtTrfTxInf = pmtInf.NewElement("CdtTrfTxInf");
@@ -247,7 +244,7 @@ namespace Perrich.SepaWriter
                     pmtId.NewElement("InstrId", transfer.Id);
                 pmtId.NewElement("EndToEndId", transfer.EndToEndId);
                 cdtTrfTxInf.NewElement("Amt")
-                           .NewElement("InstdAmt", FormatAmount(transfer.Amount))
+                           .NewElement("InstdAmt", XmlUtils.FormatAmount(transfer.Amount))
                            .SetAttribute("Ccy", transfer.Currency);
                 cdtTrfTxInf.NewElement("CdtrAgt").NewElement("FinInstnId").NewElement("BIC", transfer.Creditor.Bic);
                 cdtTrfTxInf.NewElement("Cdtr").NewElement("Nm", transfer.Creditor.Name);
@@ -256,16 +253,6 @@ namespace Perrich.SepaWriter
             }
 
             return xml;
-        }
-
-        /// <summary>
-        ///     Format an amount in requested string format
-        /// </summary>
-        /// <param name="amount"></param>
-        /// <returns></returns>
-        private string FormatAmount(decimal amount)
-        {
-            return String.Format(CultureInfo.InvariantCulture, "{0:0.##}", amount);
         }
     }
 }

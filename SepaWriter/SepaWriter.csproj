@@ -49,6 +49,7 @@
     <Compile Include="SepaIbanData.cs" />
     <Compile Include="SepaRuleException.cs" />
     <Compile Include="Utils\XmlElementExtension.cs" />
+    <Compile Include="Utils\XmlUtils.cs" />
     <Compile Include="Utils\XmlValidator.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -5,9 +5,9 @@ namespace Perrich.SepaWriter.Test
     [TestFixture]
     public class SepaCreditTransferTransactionTest
     {
-        private const string Bic = "BANK_BIC";
-        private const string Iban = "ACCOUNT_IBAN";
-        private const string Name = "NAME";
+        private const string Bic = "SOGEFRPPXXX";
+        private const string Iban = "FR7030002005500000157845Z02";
+        private const string Name = "A_NAME";
 
         private readonly SepaIbanData _iBanData = new SepaIbanData
             {
@@ -64,27 +64,35 @@ namespace Perrich.SepaWriter.Test
         }
 
         [Test]
-        [ExpectedException(typeof(SepaRuleException), ExpectedMessage = "Invalid amount value",
+        [ExpectedException(typeof (SepaRuleException), ExpectedMessage = "Invalid amount value",
             MatchType = MessageMatch.Contains)]
         public void ShouldRejectAmountGreaterOrEqualsThan1000000000()
         {
-            new SepaCreditTransferTransaction { Amount = 1000000000 };
+            new SepaCreditTransferTransaction {Amount = 1000000000};
         }
 
         [Test]
-        [ExpectedException(typeof(SepaRuleException), ExpectedMessage = "Invalid amount value",
+        [ExpectedException(typeof (SepaRuleException), ExpectedMessage = "Invalid amount value",
             MatchType = MessageMatch.Contains)]
         public void ShouldRejectAmountLessThan1Cents()
         {
-            new SepaCreditTransferTransaction { Amount = 0 };
+            new SepaCreditTransferTransaction {Amount = 0};
         }
 
         [Test]
-        [ExpectedException(typeof(SepaRuleException), ExpectedMessage = "Amount should have at most 2 decimals",
+        [ExpectedException(typeof (SepaRuleException), ExpectedMessage = "Amount should have at most 2 decimals",
             MatchType = MessageMatch.Contains)]
         public void ShouldRejectAmountWithMoreThan2Decimals()
         {
-            new SepaCreditTransferTransaction { Amount = 12.012m };
+            new SepaCreditTransferTransaction {Amount = 12.012m};
+        }
+
+        [Test]
+        [ExpectedException(typeof (SepaRuleException), ExpectedMessage = "Creditor IBAN data are invalid.",
+            MatchType = MessageMatch.Exact)]
+        public void ShouldRejectInvalidCreditor()
+        {
+            new SepaCreditTransferTransaction {Creditor = new SepaIbanData()};
         }
     }
 }

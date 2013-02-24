@@ -19,25 +19,27 @@ Sample for a quick simple transaction :
 ```csharp
 public class MySepaCreditTransfer
 {
-  private static SepaCreditTransfer GetSampleCreditTransfert(decimal amount, string bic, string iban,
+  private static SepaCreditTransfer GetCreditTransfertSample(decimal amount, string bic, string iban,
     string name, string comment)
   {
       var transfert = new SepaCreditTransfer
       {
-          MessageIdentification = "transferId",
-          PaymentInfoId = "paymentInfo",
+          MessageIdentification = "uniqueCreditTransfertId",
           InitiatingPartyName = "Your name",
           // Below, your bank data
           Debtor = new SepaIbanData {Bic = "SOGEFRPPXXX", Iban = "FR7030002005500000157845Z02", Name = "My Corp"}          
       };
 
-      transfert.AddCreditTransfer("Transaction#1", null,
-                                  new SepaIbanData
-                                      {
-                                          Bic = bic,
-                                          Iban = iban,
-                                          Name = name
-                                      }, amount, comment);
+      transfert.AddCreditTransfer(new SepaCreditTransferTransaction
+		{
+			Creditor = new SepaIbanData {
+			  Bic = bic,
+			  Iban = iban,
+			  Name = name
+			},
+			Amount = amount,
+			RemittanceInformation = comment
+		});
       return transfert;
   }
 
