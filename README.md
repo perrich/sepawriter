@@ -45,7 +45,7 @@ public class MySepaCreditTransfer
 
   public MySepaCreditTransfer()
   {
-    var transfert = GetSampleCreditTransfert(123.45,  "AGRIFRPPXXX", "FR1420041010050500013M02606",
+    var transfert = GetCreditTransfertSample(123.45m,  "AGRIFRPPXXX", "FR1420041010050500013M02606",
       "THEIR_NAME", "Payment sample");
     transfert.Save("sample.xml");
   }
