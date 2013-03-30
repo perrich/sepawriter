@@ -19,7 +19,7 @@ namespace Perrich.SepaWriter.Test
                     Name = Name
                 };
 
-            Assert.True(data.IsValid());
+            Assert.True(data.IsValid);
         }
 
         [Test]
@@ -46,7 +46,7 @@ namespace Perrich.SepaWriter.Test
                     Name = Name
                 };
 
-            Assert.False(data.IsValid());
+            Assert.False(data.IsValid);
         }
 
         [Test]
@@ -58,7 +58,7 @@ namespace Perrich.SepaWriter.Test
                     Name = Name
                 };
 
-            Assert.False(data.IsValid());
+            Assert.False(data.IsValid);
         }
 
         [Test]
@@ -70,7 +70,7 @@ namespace Perrich.SepaWriter.Test
                     Iban = Iban
                 };
 
-            Assert.False(data.IsValid());
+            Assert.False(data.IsValid);
         }
 
         [Test]

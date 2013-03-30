@@ -1,30 +1,21 @@
-﻿using System;
-using System.Globalization;
-using System.Xml;
+﻿using System.Xml;
 
 namespace Perrich.SepaWriter.Utils
 {
+    /// <summary>
+    ///     Some Utilities to manage XML
+    /// </summary>
     public static class XmlUtils
     {
         /// <summary>
-        ///     Format an amount in requested string format
+        ///     Find First element in the Xml document with provided name
         /// </summary>
-        /// <param name="amount"></param>
+        /// <param name="document">The Xml Document</param>
+        /// <param name="nodeName">The name of the node</param>
         /// <returns></returns>
-        public static string FormatAmount(decimal amount)
+        public static XmlElement GetFirstElement(XmlNode document, string nodeName)
         {
-            return String.Format(CultureInfo.InvariantCulture, "{0:0.##}", amount);
-        }
-
-        /// <summary>
-        /// Find First element in the Xml document with provided name
-        /// </summary>
-        /// <param name="document"></param>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public static XmlElement GetFirstElement(XmlDocument document, string name)
-        {
-            return document.SelectSingleNode("//" + name) as XmlElement;
+            return document.SelectSingleNode("//" + nodeName) as XmlElement; 
         }
     }
 }

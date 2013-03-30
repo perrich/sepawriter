@@ -1,50 +1,56 @@
 ﻿using System;
+using Perrich.SepaWriter.Utils;
 
 namespace Perrich.SepaWriter
 {
+    /// <summary>
+    /// Define a SEPA Credit Transfer Transaction
+    /// </summary>
     public class SepaCreditTransferTransaction : ICloneable
     {
+        private decimal amount;
+        private SepaIbanData creditor;
+        private string endToEndId;
+        private string remittanceInformation;
+
         /// <summary>
         ///     ISO 4217 currency code (default is EUR)
         /// </summary>
-        public string Currency = "EUR";
+        public string Currency  { get; set;  }
 
         /// <summary>
         ///     Payment Identifier
         /// </summary>
-        public string Id;
-
-        private decimal _amount;
-        private SepaIbanData _creditor;
-        private string _endToEndId;
-        private string _remittanceInformation;
+        public string Id { get; set; }
 
         /// <summary>
         ///     Creditor IBAN data
         /// </summary>
+        /// <exception cref="SepaRuleException">If creditor to set is not valid.</exception>
         public SepaIbanData Creditor
         {
-            get { return _creditor; }
+            get { return creditor; }
             set
             {
-                if (!value.IsValid())
+                if (!value.IsValid)
                     throw new SepaRuleException("Creditor IBAN data are invalid.");
-                _creditor = value;
+                creditor = value;
             }
         }
 
         /// <summary>
         ///     The Unique Identifier (if not defined, it's defined as "MessageIdentification/PositionInTransactionsList" by the SepaCreditTransfert)
         /// </summary>
+        /// <exception cref="SepaRuleException">If id is null or greatear than 30.</exception>
         public string EndToEndId
         {
-            get { return _endToEndId; }
+            get { return endToEndId; }
             set
             {
                 if (value == null || value.Length > 30)
                     throw new SepaRuleException("EndToEndId Length cannot be greater than 30.");
 
-                _endToEndId = value;
+                endToEndId = value;
             }
         }
 
@@ -53,28 +59,20 @@ namespace Perrich.SepaWriter
         /// </summary>
         public string RemittanceInformation
         {
-            get { return _remittanceInformation; }
+            get { return remittanceInformation; }
             set
             {
-                const int allowedLength = 140;
-
-                if (value != null && value.Length > allowedLength)
-                {
-                    _remittanceInformation = value.Substring(0, allowedLength);
-                }
-                else
-                {
-                    _remittanceInformation = value;
-                }
+                remittanceInformation = StringUtils.GetLimitedString(value, 140);
             }
         }
 
         /// <summary>
         ///     Transfer amount
         /// </summary>
+        /// <exception cref="SepaRuleException">If amount has more than two decimals and is lesser than 0.01.</exception>
         public decimal Amount
         {
-            get { return _amount; }
+            get { return amount; }
             set
             {
                 if (value < new decimal(0.01) || value > new decimal(999999999.99))
@@ -83,10 +81,22 @@ namespace Perrich.SepaWriter
                 if (Math.Round(value, 2) != value)
                     throw new SepaRuleException("Amount should have at most 2 decimals");
 
-                _amount = value;
+                amount = value;
             }
         }
 
+        /// <summary>
+        /// Create a SEPA Credit transfer transaction
+        /// </summary>
+        public SepaCreditTransferTransaction()
+        {
+            Currency = Constant.EuroCurrency;
+        }
+
+        /// <summary>
+        /// Return a copy of this object
+        /// </summary>
+        /// <returns></returns>
         public object Clone()
         {
             var row = (SepaCreditTransferTransaction) MemberwiseClone();

@@ -43,11 +43,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constant.cs" />
     <Compile Include="SepaCreditTransfer.cs" />
     <Compile Include="SepaCreditTransferTransaction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SepaIbanData.cs" />
     <Compile Include="SepaRuleException.cs" />
+    <Compile Include="Utils\StringUtils.cs" />
     <Compile Include="Utils\XmlElementExtension.cs" />
     <Compile Include="Utils\XmlUtils.cs" />
     <Compile Include="Utils\XmlValidator.cs" />

@@ -195,8 +195,8 @@ namespace Perrich.SepaWriter.Test
 
             const decimal total = (amount + amount2 + amount3)*100;
 
-            Assert.AreEqual(total, transfert.GetHeaderControlSumInCents());
-            Assert.AreEqual(total, transfert.GetPaymentControlSumInCents());
+            Assert.AreEqual(total, transfert.HeaderControlSumInCents);
+            Assert.AreEqual(total, transfert.PaymentControlSumInCents);
 
             Assert.AreEqual(MULTIPLE_ROW_RESULT, transfert.AsXmlString());
 
@@ -211,8 +211,8 @@ namespace Perrich.SepaWriter.Test
             SepaCreditTransfer transfert = GetOneTransactionCreditTransfert(amount);
 
             const decimal total = amount*100;
-            Assert.AreEqual(total, transfert.GetHeaderControlSumInCents());
-            Assert.AreEqual(total, transfert.GetPaymentControlSumInCents());
+            Assert.AreEqual(total, transfert.HeaderControlSumInCents);
+            Assert.AreEqual(total, transfert.PaymentControlSumInCents);
 
             Assert.AreEqual(ONE_ROW_RESULT, transfert.AsXmlString());
         }
