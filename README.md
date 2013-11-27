@@ -15,7 +15,7 @@ http://www.cfonb.org/Web/cfonb/cfonbmain.nsf/DocumentsByIDWeb/7JRDVV/$File/3-15%
 Sample
 ---
 
-Sample for a quick simple transaction :
+Sample for a quick single transaction :
 ```csharp
 public class MySepaCreditTransfer
 {
