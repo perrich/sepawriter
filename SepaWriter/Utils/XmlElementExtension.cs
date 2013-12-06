@@ -28,11 +28,6 @@ namespace Perrich.SepaWriter.Utils
         /// <returns></returns>
         public static XmlElement NewElement(this XmlElement parent, string name, object value)
         {
-            if (parent == null)
-                throw new ArgumentNullException("parent");
-            if (parent.OwnerDocument == null)
-                throw new ArgumentException("parent hasn't OwnerDocument!");
-
             var e = parent.OwnerDocument.CreateElement(name);
             if (value != null)
                 e.InnerText = value.ToString();
