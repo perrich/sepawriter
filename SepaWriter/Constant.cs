@@ -12,8 +12,13 @@
 
 
         /// <summary>
-        ///     Transfert Payment method
+        /// Credit Transfert Payment method
         /// </summary>
-        public const string TransfertPaymentMethod = "TRF";
+        public const string CreditTransfertPaymentMethod = "TRF";
+
+        /// <summary>
+        /// Debit Transfert Payment method
+        /// </summary>
+        public const string DebitTransfertPaymentMethod = "DD";
     }
 }

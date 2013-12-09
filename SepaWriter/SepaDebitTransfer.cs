@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 using Perrich.SepaWriter.Utils;
@@ -9,29 +10,41 @@ namespace Perrich.SepaWriter
     ///     Manage SEPA (Single Euro Payments Area) CreditTransfer for SEPA or international order.
     ///     Only one PaymentInformation is managed but it can manage multiple transactions.
     /// </summary>
-    public class SepaCreditTransfer : SepaTransfer<SepaCreditTransferTransaction>
+    public class SepaDebitTransfer : SepaTransfer<SepaDebitTransferTransaction>
     {
         /// <summary>
-        ///     Debtor account ISO currency code (default is EUR)
+        ///     creditor account ISO currency code (default is EUR)
         /// </summary>
         public string DebtorAccountCurrency { get; set; }
 
-        public SepaCreditTransfer()
+        /// <summary>
+        ///     Unique and unambiguous identification of a person. SEPA creditor
+        /// </summary>
+        public string PersonId { get; set; }
+
+        /// <summary>
+        ///     Sequence Type (default is "OOFF")
+        /// </summary>
+        public string SequenceType { get; set; }
+
+        public SepaDebitTransfer()
         {
             DebtorAccountCurrency = Constant.EuroCurrency;
+            LocalInstrumentCode = "CORE";
+            SequenceType = "OOFF";
         }
 
         /// <summary>
-        ///     Debtor IBAN data
+        ///     Creditor IBAN data
         /// </summary>
-        /// <exception cref="SepaRuleException">If debtor to set is not valid.</exception>
-        public SepaIbanData Debtor
+        /// <exception cref="SepaRuleException">If creditor to set is not valid.</exception>
+        public SepaIbanData Creditor
         {
             get { return SepaIban; }
             set
             {
                 if (!value.IsValid)
-                    throw new SepaRuleException("Debtor IBAN data are invalid.");
+                    throw new SepaRuleException("Creditor IBAN data are invalid.");
                 SepaIban = value;
             }
         }
@@ -44,9 +57,9 @@ namespace Perrich.SepaWriter
         {
             base.CheckMandatoryData();
 
-            if (Debtor == null)
+            if (Creditor == null)
             {
-                throw new SepaRuleException("The debtor is mandatory.");
+                throw new SepaRuleException("The creditor is mandatory.");
             }
         }
 
@@ -55,7 +68,7 @@ namespace Perrich.SepaWriter
         /// </summary>
         /// <param name="transfer"></param>
         /// <exception cref="ArgumentNullException">If transfert is null.</exception>
-        public void AddCreditTransfer(SepaCreditTransferTransaction transfer)
+        public void AddDebitTransfer(SepaDebitTransferTransaction transfer)
         {
             AddTransfer(transfer);
         }
@@ -72,11 +85,11 @@ namespace Perrich.SepaWriter
             xml.AppendChild(xml.CreateXmlDeclaration("1.0", Encoding.UTF8.BodyName, "yes"));
             var el = (XmlElement)xml.AppendChild(xml.CreateElement("Document"));
             el.SetAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-            el.SetAttribute("xmlns", "urn:iso:std:iso:20022:tech:xsd:pain.001.001.03");
-            el.NewElement("CstmrCdtTrfInitn");
+            el.SetAttribute("xmlns", "urn:iso:std:iso:20022:tech:xsd:pain.008.001.02");
+            el.NewElement("CstmrDrctDbtInitn");
 
             // Part 1: Group Header
-            var grpHdr = XmlUtils.GetFirstElement(xml, "CstmrCdtTrfInitn").NewElement("GrpHdr");
+            var grpHdr = XmlUtils.GetFirstElement(xml, "CstmrDrctDbtInitn").NewElement("GrpHdr");
             grpHdr.NewElement("MsgId", MessageIdentification);
             grpHdr.NewElement("CreDtTm", StringUtils.FormatDateTime(CreationDate));
             grpHdr.NewElement("NbOfTxs", numberOfTransactions);
@@ -86,30 +99,35 @@ namespace Perrich.SepaWriter
                 grpHdr.NewElement("InitgPty").NewElement("Id", InitiatingPartyId);
 
             // Part 2: Payment Information
-            var pmtInf = XmlUtils.GetFirstElement(xml, "CstmrCdtTrfInitn").NewElement("PmtInf");
+            var pmtInf = XmlUtils.GetFirstElement(xml, "CstmrDrctDbtInitn").NewElement("PmtInf");
             pmtInf.NewElement("PmtInfId", PaymentInfoId ?? MessageIdentification);
             if (CategoryPurposeCode != null)
                 pmtInf.NewElement("CtgyPurp").NewElement("Cd", CategoryPurposeCode);
 
-            pmtInf.NewElement("PmtMtd", Constant.CreditTransfertPaymentMethod);
+            pmtInf.NewElement("PmtMtd", Constant.DebitTransfertPaymentMethod);
             pmtInf.NewElement("NbOfTxs", numberOfTransactions);
             pmtInf.NewElement("CtrlSum", StringUtils.FormatAmount(paymentControlSum));
             pmtInf.NewElement("PmtTpInf").NewElement("SvcLvl").NewElement("Cd", "SEPA");
-            if (LocalInstrumentCode != null)
-                XmlUtils.GetFirstElement(xml, "PmtTpInf").NewElement("LclInstr")
+            XmlUtils.GetFirstElement(xml, "PmtTpInf").NewElement("LclInstrm")
                         .NewElement("Cd", LocalInstrumentCode);
+            XmlUtils.GetFirstElement(xml, "PmtTpInf").NewElement("SeqTp", SequenceType);
 
-            pmtInf.NewElement("ReqdExctnDt", StringUtils.FormatDate(RequestedExecutionDate));
-            pmtInf.NewElement("Dbtr").NewElement("Nm", Debtor.Name);
+            pmtInf.NewElement("ReqdColltnDt", StringUtils.FormatDate(RequestedExecutionDate));
+            pmtInf.NewElement("Cdtr").NewElement("Nm", Creditor.Name);
 
-            var dbtrAcct = pmtInf.NewElement("DbtrAcct");
-            dbtrAcct.NewElement("Id").NewElement("IBAN", Debtor.Iban);
+            var dbtrAcct = pmtInf.NewElement("CdtrAcct");
+            dbtrAcct.NewElement("Id").NewElement("IBAN", Creditor.Iban);
             dbtrAcct.NewElement("Ccy", DebtorAccountCurrency);
 
-            pmtInf.NewElement("DbtrAgt").NewElement("FinInstnId").NewElement("BIC", Debtor.Bic);
+            pmtInf.NewElement("CdtrAgt").NewElement("FinInstnId").NewElement("BIC", Creditor.Bic);
             pmtInf.NewElement("ChrgBr", "SLEV");
 
-            // Part 3: Credit Transfer Transaction Information
+            var othr = pmtInf.NewElement("CdtrSchmeId").NewElement("Id")
+                    .NewElement("PrvtId")
+                        .NewElement("Othr");
+            othr.NewElement("Id", PersonId);
+            othr.NewElement("SchmeNm").NewElement("Prtry", "SEPA");
+            // Part 3: Debit Transfer Transaction Information
             foreach (var transfer in transactions)
             {
                 GenerateTransaction(pmtInf, transfer);
@@ -123,19 +141,22 @@ namespace Perrich.SepaWriter
         /// </summary>
         /// <param name="pmtInf">The root nodes for a transaction</param>
         /// <param name="transfer">The transaction to generate</param>
-        private static void GenerateTransaction(XmlElement pmtInf, SepaCreditTransferTransaction transfer)
+        private static void GenerateTransaction(XmlElement pmtInf, SepaDebitTransferTransaction transfer)
         {
-            var cdtTrfTxInf = pmtInf.NewElement("CdtTrfTxInf");
+            var cdtTrfTxInf = pmtInf.NewElement("DrctDbtTxInf");
             var pmtId = cdtTrfTxInf.NewElement("PmtId");
             if (transfer.Id != null)
                 pmtId.NewElement("InstrId", transfer.Id);
             pmtId.NewElement("EndToEndId", transfer.EndToEndId);
-            cdtTrfTxInf.NewElement("Amt")
-                       .NewElement("InstdAmt", StringUtils.FormatAmount(transfer.Amount))
-                       .SetAttribute("Ccy", transfer.Currency);
-            cdtTrfTxInf.NewElement("CdtrAgt").NewElement("FinInstnId").NewElement("BIC", transfer.Creditor.Bic);
-            cdtTrfTxInf.NewElement("Cdtr").NewElement("Nm", transfer.Creditor.Name);
-            cdtTrfTxInf.NewElement("CdtrAcct").NewElement("Id").NewElement("IBAN", transfer.Creditor.Iban);
+            cdtTrfTxInf.NewElement("InstdAmt", StringUtils.FormatAmount(transfer.Amount)).SetAttribute("Ccy", transfer.Currency);
+
+            var mndtRltdInf = cdtTrfTxInf.NewElement("DrctDbtTx").NewElement("MndtRltdInf");
+            mndtRltdInf.NewElement("MndtId", transfer.MandateIdentification);
+            mndtRltdInf.NewElement("DtOfSgntr", StringUtils.FormatDate(transfer.DateOfSignature));
+
+            cdtTrfTxInf.NewElement("DbtrAgt").NewElement("FinInstnId").NewElement("BIC", transfer.Debtor.Bic);
+            cdtTrfTxInf.NewElement("Dbtr").NewElement("Nm", transfer.Debtor.Name);
+            cdtTrfTxInf.NewElement("DbtrAcct").NewElement("Id").NewElement("IBAN", transfer.Debtor.Iban);
             cdtTrfTxInf.NewElement("RmtInf").NewElement("Ustrd", transfer.RemittanceInformation);
         }
     }

@@ -1,9 +1,10 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 
 namespace Perrich.SepaWriter.Test
 {
     [TestFixture]
-    public class SepaCreditTransferTransactionTest
+    public class SepaDebitTransferTransactionTest
     {
         private const string Bic = "SOGEFRPPXXX";
         private const string Iban = "FR7030002005500000157845Z02";
@@ -19,7 +20,7 @@ namespace Perrich.SepaWriter.Test
         [Test]
         public void ShouldHaveADefaultCurrency()
         {
-            var data = new SepaCreditTransferTransaction();
+            var data = new SepaDebitTransferTransaction();
 
             Assert.AreEqual("EUR", data.Currency);
         }
@@ -32,15 +33,19 @@ namespace Perrich.SepaWriter.Test
             const string id = "Batch1";
             const string endToEndId = "Batch1/Row2";
             const string remittanceInformation = "Sample";
+            const string mandateId = "MyMandate";
+            var signatureDate = new DateTime(2012, 12, 2);
 
-            var data = new SepaCreditTransferTransaction
+            var data = new SepaDebitTransferTransaction
                 {
-                    Creditor = _iBanData,
+                    Debtor = _iBanData,
                     Amount = amount,
                     Currency = currency,
                     Id = id,
                     EndToEndId = endToEndId,
-                    RemittanceInformation = remittanceInformation
+                    RemittanceInformation = remittanceInformation,
+                    DateOfSignature = signatureDate,
+                    MandateIdentification = mandateId,
                 };
 
             Assert.AreEqual(currency, data.Currency);
@@ -48,10 +53,13 @@ namespace Perrich.SepaWriter.Test
             Assert.AreEqual(id, data.Id);
             Assert.AreEqual(endToEndId, data.EndToEndId);
             Assert.AreEqual(remittanceInformation, data.RemittanceInformation);
-            Assert.AreEqual(Bic, data.Creditor.Bic);
-            Assert.AreEqual(Iban, data.Creditor.Iban);
+            Assert.AreEqual(Bic, data.Debtor.Bic);
+            Assert.AreEqual(Iban, data.Debtor.Iban);
+            Assert.AreEqual(Iban, data.Debtor.Iban);
+            Assert.AreEqual(mandateId, data.MandateIdentification);
+            Assert.AreEqual(signatureDate, data.DateOfSignature);
 
-            var data2 = data.Clone() as SepaCreditTransferTransaction;
+            var data2 = data.Clone() as SepaDebitTransferTransaction;
 
             Assert.NotNull(data2);
             Assert.AreEqual(currency, data2.Currency);
@@ -59,16 +67,18 @@ namespace Perrich.SepaWriter.Test
             Assert.AreEqual(id, data2.Id);
             Assert.AreEqual(endToEndId, data2.EndToEndId);
             Assert.AreEqual(remittanceInformation, data2.RemittanceInformation);
-            Assert.AreEqual(Bic, data2.Creditor.Bic);
-            Assert.AreEqual(Iban, data2.Creditor.Iban);
+            Assert.AreEqual(Bic, data2.Debtor.Bic);
+            Assert.AreEqual(Iban, data2.Debtor.Iban);
+            Assert.AreEqual(mandateId, data2.MandateIdentification);
+            Assert.AreEqual(signatureDate, data2.DateOfSignature);
         }
 
         [Test]
-        [ExpectedException(typeof (SepaRuleException), ExpectedMessage = "Creditor IBAN data are invalid.",
+        [ExpectedException(typeof(SepaRuleException), ExpectedMessage = "Debtor IBAN data are invalid.",
             MatchType = MessageMatch.Exact)]
-        public void ShouldRejectInvalidCreditor()
+        public void ShouldRejectInvalidDebtor()
         {
-            new SepaCreditTransferTransaction {Creditor = new SepaIbanData()};
+            new SepaDebitTransferTransaction { Debtor = new SepaIbanData() };
         }
     }
 }
