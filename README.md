@@ -1,16 +1,19 @@
 SepaWriter
 ===
 
-Manage SEPA (Single Euro Payments Area) CreditTransfer for SEPA or international order.
-Only one PaymentInformation is managed but it can manage multiple transactions. The debtor is common to all transactions.
+Manage SEPA (Single Euro Payments Area) Credit and Debit Transfer for SEPA or international order.
+Only one PaymentInformation is managed but it can manage multiple transactions. 
+- The debtor is common to all transactions in a Credit transfer.
+- The creditor is common to all transactions in a Debit transfer.
 
-It follow "Customer Credit Transfer Initiation" <pain.001.001.03> defined in ISO 20022 but also some specific french rules (field used size != allowed size).
+It follow "Customer Credit Transfer Initiation" &lt;pain.001.001.03&gt; defined in ISO 20022 but also some specific french rules (field used size != allowed size). Debit uses &lt;pain.008.001.02&gt; defined in ISO 20022 and the same french restrictions.
 
 English usage guide :
 http://www.swift.com/assets/corporates/documents/our_solution/implementing_your_project_2009_iso20022_usage_guide.pdf
 
 French usage guide :
-http://www.cfonb.org/Web/cfonb/cfonbmain.nsf/DocumentsByIDWeb/7JRDVV/$File/3-15%20Guide%20ISO20022%20remises%20informatisees%20d_ordres%20de%20paiement%2020100602%20virement%20V2.0_2010_06.pdf
+http://www.cfonb.org/fichiers/20130612091605_3_15_Guide_ISO20022_remises_informatisees_d_ordres_de_paiement_20100602_virement_V2.0_2010_06.pdf
+http://cfonb.inie.makoa.fr/fichiers/20131206162450_2_11_Guide_ISO20022_remises_informatisees_dordres_de_prelevement_SEPA_pain.008__v1.2__2013_12.pdf
 
 Sample
 ---
