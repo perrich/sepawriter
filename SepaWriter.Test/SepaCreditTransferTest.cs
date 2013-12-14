@@ -100,14 +100,14 @@ namespace Perrich.SepaWriter.Test
         public void ShouldManageMultipleTransactionsTransfer()
         {
             var transfert = new SepaCreditTransfer
-                {
-                    CreationDate = new DateTime(2013, 02, 17, 22, 38, 12),
-                    RequestedExecutionDate = new DateTime(2013, 02, 18),
-                    MessageIdentification = "transferID",
-                    PaymentInfoId = "paymentInfo",
-                    InitiatingPartyName = "Me",
-                    Debtor = Debtor
-                };
+            {
+                CreationDate = new DateTime(2013, 02, 17, 22, 38, 12),
+                RequestedExecutionDate = new DateTime(2013, 02, 18),
+                MessageIdentification = "transferID",
+                PaymentInfoId = "paymentInfo",
+                InitiatingPartyName = "Me",
+                Debtor = Debtor
+            };
 
             const decimal amount = 23.45m;
             var trans = CreateTransaction("Transaction Id 1", amount, "Transaction description");
@@ -121,17 +121,17 @@ namespace Perrich.SepaWriter.Test
             const decimal amount3 = 27.35m;
 
             transfert.AddCreditTransfer(new SepaCreditTransferTransaction
+            {
+                Id = "Transaction Id 3",
+                Creditor = new SepaIbanData
                 {
-                    Id = "Transaction Id 3",
-                    Creditor = new SepaIbanData
-                        {
-                            Bic = "BANK_BIC",
-                            Iban = "ACCOUNT_IBAN_SAMPLE",
-                            Name = "NAME"
-                        },
-                    Amount = amount3,
-                    RemittanceInformation = "Transaction description 3"
-                });
+                    Bic = "BANK_BIC",
+                    Iban = "ACCOUNT_IBAN_SAMPLE",
+                    Name = "NAME"
+                },
+                Amount = amount3,
+                RemittanceInformation = "Transaction description 3"
+            });
 
             const decimal total = (amount + amount2 + amount3)*100;
 
@@ -139,9 +139,98 @@ namespace Perrich.SepaWriter.Test
             Assert.AreEqual(total, transfert.PaymentControlSumInCents);
 
             Assert.AreEqual(MULTIPLE_ROW_RESULT, transfert.AsXmlString());
+        }
 
-            XmlValidator validator = XmlValidator.SepaCreditTransferValidator;
+
+        [Test]
+        public void ShouldValidateThePain00100103XmlSchema()
+        {
+            var transfert = new SepaCreditTransfer
+            {
+                CreationDate = new DateTime(2013, 02, 17, 22, 38, 12),
+                RequestedExecutionDate = new DateTime(2013, 02, 18),
+                MessageIdentification = "transferID",
+                PaymentInfoId = "paymentInfo",
+                InitiatingPartyName = "Me",
+                Debtor = Debtor
+            };
+
+            const decimal amount = 23.45m;
+            var trans = CreateTransaction("Transaction Id 1", amount, "Transaction description");
+            trans.EndToEndId = "multiple1";
+            transfert.AddCreditTransfer(trans);
+
+            const decimal amount2 = 12.56m;
+            trans = CreateTransaction("Transaction Id 2", amount2, "Transaction description 2");
+            transfert.AddCreditTransfer(trans);
+
+            const decimal amount3 = 27.35m;
+
+            transfert.AddCreditTransfer(new SepaCreditTransferTransaction
+            {
+                Id = "Transaction Id 3",
+                Creditor = new SepaIbanData
+                {
+                    Bic = "BANK_BIC",
+                    Iban = "ACCOUNT_IBAN_SAMPLE",
+                    Name = "NAME"
+                },
+                Amount = amount3,
+                RemittanceInformation = "Transaction description 3"
+            });
+
+            var validator = XmlValidator.GetValidator(transfert.Schema);
             validator.Validate(transfert.AsXmlString());
+        }
+
+        [Test]
+        public void ShouldValidateThePain00100104XmlSchema()
+        {
+            var transfert = new SepaCreditTransfer
+            {
+                CreationDate = new DateTime(2013, 02, 17, 22, 38, 12),
+                RequestedExecutionDate = new DateTime(2013, 02, 18),
+                MessageIdentification = "transferID",
+                PaymentInfoId = "paymentInfo",
+                InitiatingPartyName = "Me",
+                Debtor = Debtor,
+                Schema = SepaSchema.Pain00100104
+            };
+
+            const decimal amount = 23.45m;
+            var trans = CreateTransaction("Transaction Id 1", amount, "Transaction description");
+            trans.EndToEndId = "multiple1";
+            transfert.AddCreditTransfer(trans);
+
+            const decimal amount2 = 12.56m;
+            trans = CreateTransaction("Transaction Id 2", amount2, "Transaction description 2");
+            transfert.AddCreditTransfer(trans);
+
+            const decimal amount3 = 27.35m;
+
+            transfert.AddCreditTransfer(new SepaCreditTransferTransaction
+            {
+                Id = "Transaction Id 3",
+                Creditor = new SepaIbanData
+                {
+                    Bic = "BANK_BIC",
+                    Iban = "ACCOUNT_IBAN_SAMPLE",
+                    Name = "NAME"
+                },
+                Amount = amount3,
+                RemittanceInformation = "Transaction description 3"
+            });
+
+            var validator = XmlValidator.GetValidator(transfert.Schema);
+            validator.Validate(transfert.AsXmlString());
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentException), ExpectedMessage = "schema is not allowed!",
+            MatchType = MessageMatch.Contains)]
+        public void ShouldRejectNotAllowedXmlSchema()
+        {
+            var transfert = new SepaCreditTransfer {Schema = SepaSchema.Pain00800102};
         }
 
         [Test]

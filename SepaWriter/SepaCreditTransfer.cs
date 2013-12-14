@@ -16,9 +16,13 @@ namespace Perrich.SepaWriter
         /// </summary>
         public string DebtorAccountCurrency { get; set; }
 
+        /// <summary>
+        /// Create a Sepa Credit Transfer using Pain.001.001.03 schema
+        /// </summary>
         public SepaCreditTransfer()
         {
             DebtorAccountCurrency = Constant.EuroCurrency;
+            schema = SepaSchema.Pain00100103;
         }
 
         /// <summary>
@@ -72,7 +76,7 @@ namespace Perrich.SepaWriter
             xml.AppendChild(xml.CreateXmlDeclaration("1.0", Encoding.UTF8.BodyName, "yes"));
             var el = (XmlElement)xml.AppendChild(xml.CreateElement("Document"));
             el.SetAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-            el.SetAttribute("xmlns", "urn:iso:std:iso:20022:tech:xsd:pain.001.001.03");
+            el.SetAttribute("xmlns", "urn:iso:std:iso:20022:tech:xsd:" + SepaSchemaUtils.SepaSchemaToString(schema));
             el.NewElement("CstmrCdtTrfInitn");
 
             // Part 1: Group Header
@@ -137,6 +141,10 @@ namespace Perrich.SepaWriter
             cdtTrfTxInf.NewElement("Cdtr").NewElement("Nm", transfer.Creditor.Name);
             cdtTrfTxInf.NewElement("CdtrAcct").NewElement("Id").NewElement("IBAN", transfer.Creditor.Iban);
             cdtTrfTxInf.NewElement("RmtInf").NewElement("Ustrd", transfer.RemittanceInformation);
+        }
+        protected override bool CheckSchema(SepaSchema schema)
+        {
+            return schema == SepaSchema.Pain00100103 || schema == SepaSchema.Pain00100104;
         }
     }
 }

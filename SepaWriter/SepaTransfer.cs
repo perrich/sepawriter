@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Xml;
 
 namespace Perrich.SepaWriter
@@ -14,6 +15,8 @@ namespace Perrich.SepaWriter
         protected decimal paymentControlSum;
         protected SepaIbanData SepaIban;
         protected readonly List<T> transactions = new List<T>();
+
+        protected SepaSchema schema;
 
         /// <summary>
         ///     Number of payment transactions.
@@ -53,6 +56,19 @@ namespace Perrich.SepaWriter
         ///     Requested Execution Date (default is object creation date)
         /// </summary>
         public DateTime RequestedExecutionDate { get; set; }
+
+        /// <summary>
+        ///     Get the XML Schema used to create the file
+        /// </summary>
+        public SepaSchema Schema
+        {
+            get { return schema; }
+            set {
+                if (!CheckSchema(value))
+                    throw new ArgumentException(schema + " schema is not allowed!");
+                schema = value;
+            }
+        }
 
         protected SepaTransfer()
         {
@@ -162,5 +178,7 @@ namespace Perrich.SepaWriter
         /// </summary>
         /// <returns></returns>
         protected abstract XmlDocument GenerateXml();
+
+        protected abstract bool CheckSchema(SepaSchema schema);
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 using Perrich.SepaWriter.Utils;
@@ -27,11 +26,15 @@ namespace Perrich.SepaWriter
         /// </summary>
         public string SequenceType { get; set; }
 
+        /// <summary>
+        /// Create a Sepa Debit Transfer using Pain.008.001.02 schema
+        /// </summary>
         public SepaDebitTransfer()
         {
             DebtorAccountCurrency = Constant.EuroCurrency;
             LocalInstrumentCode = "CORE";
             SequenceType = "OOFF";
+            schema = SepaSchema.Pain00800102;
         }
 
         /// <summary>
@@ -85,7 +88,7 @@ namespace Perrich.SepaWriter
             xml.AppendChild(xml.CreateXmlDeclaration("1.0", Encoding.UTF8.BodyName, "yes"));
             var el = (XmlElement)xml.AppendChild(xml.CreateElement("Document"));
             el.SetAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-            el.SetAttribute("xmlns", "urn:iso:std:iso:20022:tech:xsd:pain.008.001.02");
+            el.SetAttribute("xmlns", "urn:iso:std:iso:20022:tech:xsd:" + SepaSchemaUtils.SepaSchemaToString(schema));
             el.NewElement("CstmrDrctDbtInitn");
 
             // Part 1: Group Header
@@ -158,6 +161,11 @@ namespace Perrich.SepaWriter
             cdtTrfTxInf.NewElement("Dbtr").NewElement("Nm", transfer.Debtor.Name);
             cdtTrfTxInf.NewElement("DbtrAcct").NewElement("Id").NewElement("IBAN", transfer.Debtor.Iban);
             cdtTrfTxInf.NewElement("RmtInf").NewElement("Ustrd", transfer.RemittanceInformation);
+        }
+
+        protected override bool CheckSchema(SepaSchema schema)
+        {
+            return schema == SepaSchema.Pain00800102 || schema == SepaSchema.Pain00800103;
         }
     }
 }

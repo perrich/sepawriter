@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Xml;
@@ -15,25 +16,35 @@ namespace Perrich.SepaWriter.Utils
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(XmlValidator));
 
-        /// <summary>
-        ///     XML Validator for Sepa Credit Transfert. Uses XSD in http://www.iso20022.org/documents/messages/pain/schemas/pain.001.001.03.zip
-        ///     (see http://www.iso20022.org/full_catalogue.page)
-        /// </summary>
-        public static XmlValidator SepaCreditTransferValidator { get; private set; }
+        private static Dictionary<SepaSchema, XmlValidator> validators = new Dictionary<SepaSchema, XmlValidator>();
 
         /// <summary>
-        ///     XML Validator for Sepa Credit Transfert. Uses XSD in http://www.iso20022.org/documents/messages/pain/schemas/pain.008.001.02.zip
-        ///     (see http://www.iso20022.org/full_catalogue.page)
+        /// Get a validator for the provided schema
         /// </summary>
-        public static XmlValidator SepaDebitTransferValidator { get; private set; }
+        /// <param name="schema">The schema</param>
+        /// <returns>The validator</returns>
+        public static XmlValidator GetValidator(SepaSchema schema)
+        {
+            if (!validators.ContainsKey(schema))
+                throw new KeyNotFoundException("Validator for " + schema + " schema not found!");
+            return validators[schema];
+        }
 
         private readonly XmlSchema xmlSchema;
         private bool result;
 
+        /// <summary>
+        /// Init all available validators (see http://www.iso20022.org/full_catalogue.page) using embedded XSD:
+        /// http://www.iso20022.org/documents/messages/pain/schemas/pain.001.001.03.zip
+        /// http://www.iso20022.org/documents/messages/pain/schemas/pain.008.001.02.zip
+        /// ...    
+        /// </summary>
         static XmlValidator()
         {
-            SepaCreditTransferValidator = new XmlValidator("Perrich.SepaWriter.Xsd.pain.001.001.03.xsd");
-            SepaDebitTransferValidator = new XmlValidator("Perrich.SepaWriter.Xsd.pain.008.001.02.xsd");
+            foreach (SepaSchema schema in Enum.GetValues(typeof(SepaSchema)))
+            {
+                validators.Add(schema, new XmlValidator("Perrich.SepaWriter.Xsd." + SepaSchemaUtils.SepaSchemaToString(schema) + ".xsd"));
+            }        
         }
 
         /// <summary>
