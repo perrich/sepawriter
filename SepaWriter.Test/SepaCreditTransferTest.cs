@@ -40,17 +40,22 @@ namespace Perrich.SepaWriter.Test
             };
         }
 
+        private static SepaCreditTransfer GetEmptyCreditTransfert()
+        {
+            return new SepaCreditTransfer
+            {
+                CreationDate = new DateTime(2013, 02, 17, 22, 38, 12),
+                RequestedExecutionDate = new DateTime(2013, 02, 17),
+                MessageIdentification = "transferID",
+                PaymentInfoId = "paymentInfo",
+                InitiatingPartyName = "Me",
+                Debtor = Debtor
+            };
+        }
+
         private static SepaCreditTransfer GetOneTransactionCreditTransfert(decimal amount)
         {
-            var transfert = new SepaCreditTransfer
-                {
-                    CreationDate = new DateTime(2013, 02, 17, 22, 38, 12),
-                    RequestedExecutionDate = new DateTime(2013, 02, 17),
-                    MessageIdentification = "transferID",
-                    PaymentInfoId = "paymentInfo",
-                    InitiatingPartyName = "Me",
-                    Debtor = Debtor
-                };
+            var transfert = GetEmptyCreditTransfert();
 
             transfert.AddCreditTransfer(CreateTransaction("Transaction Id 1", amount, "Transaction description"));
             return transfert;
@@ -74,6 +79,16 @@ namespace Perrich.SepaWriter.Test
             transfert.AddCreditTransfer(CreateTransaction(null, amount, "Transaction description 2"));
         }
 
+        [Test]
+        public void ShouldAllowTransactionWithoutRemittanceInformation()
+        {
+            var transfert = GetEmptyCreditTransfert();
+            transfert.AddCreditTransfer(CreateTransaction(null, 12m, null));
+            transfert.AddCreditTransfer(CreateTransaction(null, 13m, null));
+
+            string result = transfert.AsXmlString();
+            Assert.False(result.Contains("<RmtInf>"));
+        }
 
         [Test]
         public void ShouldKeepEndToEndIdIfSet()

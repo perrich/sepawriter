@@ -160,7 +160,9 @@ namespace Perrich.SepaWriter
             cdtTrfTxInf.NewElement("DbtrAgt").NewElement("FinInstnId").NewElement("BIC", transfer.Debtor.Bic);
             cdtTrfTxInf.NewElement("Dbtr").NewElement("Nm", transfer.Debtor.Name);
             cdtTrfTxInf.NewElement("DbtrAcct").NewElement("Id").NewElement("IBAN", transfer.Debtor.Iban);
-            cdtTrfTxInf.NewElement("RmtInf").NewElement("Ustrd", transfer.RemittanceInformation);
+            
+            if (!string.IsNullOrEmpty(transfer.RemittanceInformation))
+                cdtTrfTxInf.NewElement("RmtInf").NewElement("Ustrd", transfer.RemittanceInformation);
         }
 
         protected override bool CheckSchema(SepaSchema schema)
