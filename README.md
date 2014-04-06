@@ -55,7 +55,7 @@ public class MySepaCreditTransfer
 }
 ```
 
-Used library:
+Used libraries:
 ---
 - NUnit 2.6.2 for unit tests
 - Log4net 2.11 for log (used in XML validator)
