@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using Perrich.SepaWriter.Utils;
 
 namespace Perrich.SepaWriter
@@ -11,6 +12,9 @@ namespace Perrich.SepaWriter
         private string bic;
         private string iban;
         private string name;
+
+        // Regex to find space
+        private static readonly Regex SpaceRegex = new Regex("\\s+", RegexOptions.Compiled); 
 
         /// <summary>
         /// The Name of the owner
@@ -50,7 +54,7 @@ namespace Perrich.SepaWriter
             {
                 if (value == null || value.Length < 14 || value.Length > 34)
                     throw new SepaRuleException("Invalid IBAN code.");
-                iban = value;
+                iban = SpaceRegex.Replace(value, string.Empty);
             }
         }
 

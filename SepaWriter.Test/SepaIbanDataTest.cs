@@ -7,6 +7,7 @@ namespace Perrich.SepaWriter.Test
     {
         private const string Bic = "SOGEFRPPXXX";
         private const string Iban = "FR7030002005500000157845Z02";
+        private const string IbanWithSpace = "FR70 30002  005500000157845Z    02";
         private const string Name = "A_NAME";
 
         [Test]
@@ -20,6 +21,20 @@ namespace Perrich.SepaWriter.Test
                 };
 
             Assert.True(data.IsValid);
+        }
+        
+        [Test]
+        public void ShouldRemoveSpaceInIban()
+        {
+            var data = new SepaIbanData
+            {
+                Bic = Bic,
+                Iban = IbanWithSpace,
+                Name = Name
+            };
+
+            Assert.True(data.IsValid);
+            Assert.AreEqual(Iban, data.Iban);
         }
 
         [Test]
