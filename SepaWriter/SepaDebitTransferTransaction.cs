@@ -18,6 +18,11 @@ namespace Perrich.SepaWriter
         public string MandateIdentification { get; set; }
 
         /// <summary>
+        ///     Sequence Type (default is "OOFF")
+        /// </summary>
+        public SepaSequenceType SequenceType { get; set; }
+
+        /// <summary>
         ///     Debtor IBAN data
         /// </summary>
         /// <exception cref="SepaRuleException">If debtor to set is not valid.</exception>
@@ -29,7 +34,16 @@ namespace Perrich.SepaWriter
                 if (!value.IsValid)
                     throw new SepaRuleException("Debtor IBAN data are invalid.");
                 SepaIban = value;
+                
             }
+        }
+
+        /// <summary>
+        ///     Constructor
+        /// </summary>
+        public SepaDebitTransferTransaction()
+        {
+            SequenceType = SepaSequenceType.OOFF;
         }
     }
 }

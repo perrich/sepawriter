@@ -35,6 +35,7 @@ namespace Perrich.SepaWriter.Test
             const string remittanceInformation = "Sample";
             const string mandateId = "MyMandate";
             var signatureDate = new DateTime(2012, 12, 2);
+            var seqType = SepaSequenceType.FIRST;
 
             var data = new SepaDebitTransferTransaction
                 {
@@ -46,6 +47,7 @@ namespace Perrich.SepaWriter.Test
                     RemittanceInformation = remittanceInformation,
                     DateOfSignature = signatureDate,
                     MandateIdentification = mandateId,
+                    SequenceType = SepaSequenceType.FIRST
                 };
 
             Assert.AreEqual(currency, data.Currency);
@@ -58,6 +60,7 @@ namespace Perrich.SepaWriter.Test
             Assert.AreEqual(Iban, data.Debtor.Iban);
             Assert.AreEqual(mandateId, data.MandateIdentification);
             Assert.AreEqual(signatureDate, data.DateOfSignature);
+            Assert.AreEqual(seqType, data.SequenceType);
 
             var data2 = data.Clone() as SepaDebitTransferTransaction;
 
@@ -71,6 +74,7 @@ namespace Perrich.SepaWriter.Test
             Assert.AreEqual(Iban, data2.Debtor.Iban);
             Assert.AreEqual(mandateId, data2.MandateIdentification);
             Assert.AreEqual(signatureDate, data2.DateOfSignature);
+            Assert.AreEqual(seqType, data2.SequenceType);
         }
 
         [Test]
@@ -79,6 +83,13 @@ namespace Perrich.SepaWriter.Test
         public void ShouldRejectInvalidDebtor()
         {
             new SepaDebitTransferTransaction { Debtor = new SepaIbanData() };
+        }
+
+        [Test]
+        public void ShouldUseADefaultSequenceType()
+        {
+            var transfert = new SepaDebitTransferTransaction();
+            Assert.AreEqual(SepaSequenceType.OOFF, transfert.SequenceType);
         }
     }
 }

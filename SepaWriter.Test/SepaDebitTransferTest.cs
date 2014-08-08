@@ -389,12 +389,5 @@ namespace Perrich.SepaWriter.Test
             var transfert = new SepaDebitTransfer();
             Assert.AreEqual("CORE", transfert.LocalInstrumentCode);
         }
-
-        [Test]
-        public void ShouldUseADefaultSequenceType()
-        {
-            var transfert = new SepaDebitTransfer();
-            Assert.AreEqual("OOFF", transfert.SequenceType);
-        }
     }
 }
