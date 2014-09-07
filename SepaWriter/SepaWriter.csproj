@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="SepaSchema.cs" />
     <Compile Include="Constant.cs" />
+    <Compile Include="SepaSequenceType.cs" />
     <Compile Include="SepaTransfer.cs" />
     <Compile Include="SepaCreditTransfer.cs" />
     <Compile Include="SepaCreditTransferTransaction.cs" />
@@ -55,6 +56,7 @@
     <Compile Include="SepaIbanData.cs" />
     <Compile Include="SepaRuleException.cs" />
     <Compile Include="Utils\SepaSchemaUtils.cs" />
+    <Compile Include="Utils\SepaSequenceTypeUtils.cs" />
     <Compile Include="Utils\StringUtils.cs" />
     <Compile Include="Utils\XmlElementExtension.cs" />
     <Compile Include="Utils\XmlUtils.cs" />
