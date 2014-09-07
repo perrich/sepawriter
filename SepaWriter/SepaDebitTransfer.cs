@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 using Perrich.SepaWriter.Utils;
@@ -98,13 +99,13 @@ namespace Perrich.SepaWriter
             // Part 2: Payment Information for each Sequence Type.
             foreach (SepaSequenceType seqTp in Enum.GetValues(typeof(SepaSequenceType)))
             {
-                var pmtInf = GeneratePaymentInformation(xml, seqTp);
-
+                var seqTransactions = transactions.FindAll(d => d.SequenceType == seqTp);
+                var pmtInf = GeneratePaymentInformation(xml, seqTp, seqTransactions);
                 // If a payment information has been created
                 if (pmtInf != null)
                 {
                     // Part 3: Debit Transfer Transaction Information
-                    foreach (var transfer in transactions.FindAll(dTransact => dTransact.SequenceType == seqTp))
+                    foreach (var transfer in seqTransactions)
                     {
                         GenerateTransaction(pmtInf, transfer);
                     }
@@ -118,22 +119,22 @@ namespace Perrich.SepaWriter
         /// Generate a Payment Information node for a Sequence Type.
         /// </summary>
         /// <param name="xml">The XML object to write</param>
-        /// <param name="SqType">The Sequence Type</param>
-        private XmlElement GeneratePaymentInformation(XmlDocument xml, SepaSequenceType SqType)
+        /// <param name="sqType">The Sequence Type</param>
+        /// <param name="seqTransactions">The transactions of the specified type</param>
+        private XmlElement GeneratePaymentInformation(XmlDocument xml, SepaSequenceType sqType, IEnumerable<SepaDebitTransferTransaction> seqTransactions)
         {
-            int nbTransaction = 0;
-            decimal sommeTransaction = 0;
-
+            int controlNumber = 0;
+            decimal controlSum = 0;
 
             // We check the number of transaction to write and the sum due to the Sequence Type.
-            foreach (var transfer in transactions.FindAll(dTransact => dTransact.SequenceType == SqType))
+            foreach (var transfer in seqTransactions)
             {
-                nbTransaction += 1;
-                sommeTransaction += transfer.Amount;
+                controlNumber += 1;
+                controlSum += transfer.Amount;
             }
 
             // If there is no transaction, we end the method here.
-            if (nbTransaction == 0)
+            if (controlNumber == 0)
                 return null;
 
             var pmtInf = XmlUtils.GetFirstElement(xml, "CstmrDrctDbtInitn").NewElement("PmtInf");
@@ -142,13 +143,13 @@ namespace Perrich.SepaWriter
                 pmtInf.NewElement("CtgyPurp").NewElement("Cd", CategoryPurposeCode);
 
             pmtInf.NewElement("PmtMtd", Constant.DebitTransfertPaymentMethod);
-            pmtInf.NewElement("NbOfTxs", nbTransaction);
-            pmtInf.NewElement("CtrlSum", StringUtils.FormatAmount(sommeTransaction));
+            pmtInf.NewElement("NbOfTxs", controlNumber);
+            pmtInf.NewElement("CtrlSum", StringUtils.FormatAmount(controlSum));
 
             var pmtTpInf = pmtInf.NewElement("PmtTpInf");
             pmtTpInf.NewElement("SvcLvl").NewElement("Cd", "SEPA");
             pmtTpInf.NewElement("LclInstrm").NewElement("Cd", LocalInstrumentCode);
-            pmtTpInf.NewElement("SeqTp", SepaSequenceTypeUtils.SepaSequenceTypeToString(SqType));
+            pmtTpInf.NewElement("SeqTp", SepaSequenceTypeUtils.SepaSequenceTypeToString(sqType));
 
             pmtInf.NewElement("ReqdColltnDt", StringUtils.FormatDate(RequestedExecutionDate));
             pmtInf.NewElement("Cdtr").NewElement("Nm", Creditor.Name);
@@ -167,7 +168,6 @@ namespace Perrich.SepaWriter
             othr.NewElement("SchmeNm").NewElement("Prtry", "SEPA");
 
             return pmtInf;
-
         }
 
         /// <summary>

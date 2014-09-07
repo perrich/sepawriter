@@ -10,7 +10,7 @@ namespace Perrich.SepaWriter.Test
         private const string Iban = "FR7030002005500000157845Z02";
         private const string Name = "A_NAME";
 
-        private readonly SepaIbanData _iBanData = new SepaIbanData
+        private readonly SepaIbanData iBanData = new SepaIbanData
             {
                 Bic = Bic,
                 Iban = Iban,
@@ -39,7 +39,7 @@ namespace Perrich.SepaWriter.Test
 
             var data = new SepaDebitTransferTransaction
                 {
-                    Debtor = _iBanData,
+                    Debtor = iBanData,
                     Amount = amount,
                     Currency = currency,
                     Id = id,
