@@ -333,6 +333,16 @@ namespace Perrich.SepaWriter.Test
         }
 
         [Test]
+        [ExpectedException(typeof(SepaRuleException), ExpectedMessage = "Debtor IBAN data are invalid.",
+            MatchType = MessageMatch.Exact)]
+        public void ShouldRejectDebtorWithoutBic()
+        {
+            var iban = (SepaIbanData)Debtor.Clone();
+            iban.UnknownBic = true;
+            new SepaCreditTransfer { Debtor = iban };
+        }
+
+        [Test]
         [ExpectedException(typeof (ArgumentNullException), ExpectedMessage = "transfer",
             MatchType = MessageMatch.Contains)]
         public void ShouldRejectNullTransactionTransfer()

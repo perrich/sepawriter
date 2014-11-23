@@ -16,7 +16,7 @@ namespace Perrich.SepaWriter.Utils
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(XmlValidator));
 
-        private static Dictionary<SepaSchema, XmlValidator> validators = new Dictionary<SepaSchema, XmlValidator>();
+        private static readonly Dictionary<SepaSchema, XmlValidator> validators = new Dictionary<SepaSchema, XmlValidator>();
 
         /// <summary>
         /// Get a validator for the provided schema

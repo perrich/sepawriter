@@ -352,9 +352,19 @@ namespace Perrich.SepaWriter.Test
         [Test]
         [ExpectedException(typeof (SepaRuleException), ExpectedMessage = "Creditor IBAN data are invalid.",
             MatchType = MessageMatch.Exact)]
-        public void ShouldRejectInvalidDebtor()
+        public void ShouldRejectInvalidCreditor()
         {
             new SepaDebitTransfer {Creditor = new SepaIbanData()};
+        }
+
+        [Test]
+        [ExpectedException(typeof(SepaRuleException), ExpectedMessage = "Creditor IBAN data are invalid.",
+            MatchType = MessageMatch.Exact)]
+        public void ShouldRejectCreditorWithoutBic()
+        {
+            var iban = (SepaIbanData)Creditor.Clone();
+            iban.UnknownBic = true;
+            new SepaDebitTransfer { Creditor = iban };
         }
 
         [Test]

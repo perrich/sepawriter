@@ -12,6 +12,7 @@ namespace Perrich.SepaWriter
         private string bic;
         private string iban;
         private string name;
+        private bool withoutBic;
 
         // Regex to find space
         private static readonly Regex SpaceRegex = new Regex("\\s+", RegexOptions.Compiled); 
@@ -26,6 +27,15 @@ namespace Perrich.SepaWriter
             {
                 name = StringUtils.GetLimitedString(value, 70);
             }
+        }
+
+        /// <summary>
+        /// Is the BIC code unknown?
+        /// </summary>
+        public bool UnknownBic
+        {
+            get { return withoutBic; }
+            set { withoutBic = value; }
         }
 
         /// <summary>
@@ -59,12 +69,12 @@ namespace Perrich.SepaWriter
         }
 
         /// <summary>
-        ///     Is data is well set to be used
+        /// Is data is well set to be used
         /// </summary>
         /// <returns></returns>
         public bool IsValid
         {
-            get { return !string.IsNullOrEmpty(bic) && !string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(iban); }
+            get { return (!string.IsNullOrEmpty(bic) || withoutBic) && !string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(iban); }
         }
 
         /// <summary>

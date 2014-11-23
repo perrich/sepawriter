@@ -22,6 +22,19 @@ namespace Perrich.SepaWriter.Test
 
             Assert.True(data.IsValid);
         }
+
+        [Test]
+        public void ShouldBeValidIfAllDataIsNotNullAndBicIsUnknown()
+        {
+            var data = new SepaIbanData
+            {
+                UnknownBic = true,
+                Iban = Iban,
+                Name = Name
+            };
+
+            Assert.True(data.IsValid);
+        }
         
         [Test]
         public void ShouldRemoveSpaceInIban()

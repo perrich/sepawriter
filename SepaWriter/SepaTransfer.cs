@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Xml;
 
 namespace Perrich.SepaWriter
@@ -179,6 +178,6 @@ namespace Perrich.SepaWriter
         /// <returns></returns>
         protected abstract XmlDocument GenerateXml();
 
-        protected abstract bool CheckSchema(SepaSchema schema);
+        protected abstract bool CheckSchema(SepaSchema aSchema);
     }
 }

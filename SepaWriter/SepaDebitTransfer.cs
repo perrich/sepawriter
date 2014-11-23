@@ -41,7 +41,7 @@ namespace Perrich.SepaWriter
             get { return SepaIban; }
             set
             {
-                if (!value.IsValid)
+                if (!value.IsValid || value.UnknownBic)
                     throw new SepaRuleException("Creditor IBAN data are invalid.");
                 SepaIban = value;
             }
@@ -188,7 +188,7 @@ namespace Perrich.SepaWriter
             mndtRltdInf.NewElement("MndtId", transfer.MandateIdentification);
             mndtRltdInf.NewElement("DtOfSgntr", StringUtils.FormatDate(transfer.DateOfSignature));
 
-            cdtTrfTxInf.NewElement("DbtrAgt").NewElement("FinInstnId").NewElement("BIC", transfer.Debtor.Bic);
+            XmlUtils.CreateBic(cdtTrfTxInf.NewElement("DbtrAgt"), transfer.Debtor);
             cdtTrfTxInf.NewElement("Dbtr").NewElement("Nm", transfer.Debtor.Name);
             cdtTrfTxInf.NewElement("DbtrAcct").NewElement("Id").NewElement("IBAN", transfer.Debtor.Iban);
 
@@ -196,9 +196,9 @@ namespace Perrich.SepaWriter
                 cdtTrfTxInf.NewElement("RmtInf").NewElement("Ustrd", transfer.RemittanceInformation);
         }
 
-        protected override bool CheckSchema(SepaSchema schema)
+        protected override bool CheckSchema(SepaSchema aSchema)
         {
-            return schema == SepaSchema.Pain00800102 || schema == SepaSchema.Pain00800103;
+            return aSchema == SepaSchema.Pain00800102 || aSchema == SepaSchema.Pain00800103;
         }
     }
 }
