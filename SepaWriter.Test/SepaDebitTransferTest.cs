@@ -390,7 +390,7 @@ namespace Perrich.SepaWriter.Test
         public void ShouldUseADefaultCurrency()
         {
             var transfert = new SepaDebitTransfer();
-            Assert.AreEqual("EUR", transfert.DebtorAccountCurrency);
+            Assert.AreEqual("EUR", transfert.CreditorAccountCurrency);
         }
 
         [Test]

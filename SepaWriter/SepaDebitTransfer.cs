@@ -15,7 +15,7 @@ namespace Perrich.SepaWriter
         /// <summary>
         ///     creditor account ISO currency code (default is EUR)
         /// </summary>
-        public string DebtorAccountCurrency { get; set; }
+        public string CreditorAccountCurrency { get; set; }
 
         /// <summary>
         ///     Unique and unambiguous identification of a person. SEPA creditor
@@ -27,7 +27,7 @@ namespace Perrich.SepaWriter
         /// </summary>
         public SepaDebitTransfer()
         {
-            DebtorAccountCurrency = Constant.EuroCurrency;
+            CreditorAccountCurrency = Constant.EuroCurrency;
             LocalInstrumentCode = "CORE";
             schema = SepaSchema.Pain00800102;
         }
@@ -156,7 +156,7 @@ namespace Perrich.SepaWriter
 
             var dbtrAcct = pmtInf.NewElement("CdtrAcct");
             dbtrAcct.NewElement("Id").NewElement("IBAN", Creditor.Iban);
-            dbtrAcct.NewElement("Ccy", DebtorAccountCurrency);
+            dbtrAcct.NewElement("Ccy", CreditorAccountCurrency);
 
             pmtInf.NewElement("CdtrAgt").NewElement("FinInstnId").NewElement("BIC", Creditor.Bic);
             pmtInf.NewElement("ChrgBr", "SLEV");
