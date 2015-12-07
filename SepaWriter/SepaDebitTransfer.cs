@@ -94,7 +94,7 @@ namespace Perrich.SepaWriter
             grpHdr.NewElement("CtrlSum", StringUtils.FormatAmount(headerControlSum));
             grpHdr.NewElement("InitgPty").NewElement("Nm", InitiatingPartyName);
             if (InitiatingPartyId != null)
-                XmlUtils.GetFirstElement(xml, "CstmrDrctDbtInitn//InitgPty").NewElement("Id", InitiatingPartyId);
+                XmlUtils.GetFirstElement(grpHdr, "InitgPty").NewElement("Id", InitiatingPartyId);
 
             // Part 2: Payment Information for each Sequence Type.
             foreach (SepaSequenceType seqTp in Enum.GetValues(typeof(SepaSequenceType)))

@@ -87,7 +87,7 @@ namespace Perrich.SepaWriter
             grpHdr.NewElement("CtrlSum", StringUtils.FormatAmount(headerControlSum));
             grpHdr.NewElement("InitgPty").NewElement("Nm", InitiatingPartyName);
             if (InitiatingPartyId != null)
-                XmlUtils.GetFirstElement(xml, "CstmrDrctDbtInitn//InitgPty").NewElement("Id", InitiatingPartyId);
+                XmlUtils.GetFirstElement(grpHdr, "InitgPty").NewElement("Id", InitiatingPartyId);
 
             // Part 2: Payment Information
             var pmtInf = XmlUtils.GetFirstElement(xml, "CstmrCdtTrfInitn").NewElement("PmtInf");
@@ -100,7 +100,7 @@ namespace Perrich.SepaWriter
             pmtInf.NewElement("CtrlSum", StringUtils.FormatAmount(paymentControlSum));
             pmtInf.NewElement("PmtTpInf").NewElement("SvcLvl").NewElement("Cd", "SEPA");
             if (LocalInstrumentCode != null)
-                XmlUtils.GetFirstElement(xml, "PmtTpInf").NewElement("LclInstr")
+                XmlUtils.GetFirstElement(pmtInf, "PmtTpInf").NewElement("LclInstr")
                         .NewElement("Cd", LocalInstrumentCode);
 
             pmtInf.NewElement("ReqdExctnDt", StringUtils.FormatDate(RequestedExecutionDate));
