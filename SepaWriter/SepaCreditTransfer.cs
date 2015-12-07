@@ -87,7 +87,7 @@ namespace Perrich.SepaWriter
             grpHdr.NewElement("CtrlSum", StringUtils.FormatAmount(headerControlSum));
             grpHdr.NewElement("InitgPty").NewElement("Nm", InitiatingPartyName);
             if (InitiatingPartyId != null)
-                grpHdr.NewElement("InitgPty").NewElement("Id", InitiatingPartyId);
+                XmlUtils.GetFirstElement(xml, "CstmrDrctDbtInitn//InitgPty").NewElement("Id", InitiatingPartyId);
 
             // Part 2: Payment Information
             var pmtInf = XmlUtils.GetFirstElement(xml, "CstmrCdtTrfInitn").NewElement("PmtInf");
