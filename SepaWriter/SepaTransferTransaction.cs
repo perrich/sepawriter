@@ -48,6 +48,18 @@ namespace Perrich.SepaWriter
             }
         }
 
+
+		private string _purpose;
+
+		public string Purpose {
+			get { return _purpose; }
+			set {
+				if (value != null && (value.Length < 1 || value.Length > 4))
+					throw new SepaRuleException("Purpose Length must be between 1 and 4 characters.");
+				_purpose = value; 
+			}
+		}
+
         /// <summary>
         ///     Remittance information (free comment)
         /// </summary>
