@@ -18,7 +18,7 @@ namespace Perrich.SepaWriter.Test
         private const string FILENAME = "sepa_test_result.xml";
 
         private const string ONE_ROW_RESULT =
-            "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?><Document xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"urn:iso:std:iso:20022:tech:xsd:pain.008.001.02\"><CstmrDrctDbtInitn><GrpHdr><MsgId>transferID</MsgId><CreDtTm>2013-02-17T22:38:12</CreDtTm><NbOfTxs>1</NbOfTxs><CtrlSum>23.45</CtrlSum><InitgPty><Nm>Me</Nm><Id>MyId</Id></InitgPty></GrpHdr><PmtInf><PmtInfId>paymentInfo</PmtInfId><PmtMtd>DD</PmtMtd><NbOfTxs>1</NbOfTxs><CtrlSum>23.45</CtrlSum><PmtTpInf><SvcLvl><Cd>SEPA</Cd></SvcLvl><LclInstrm><Cd>CORE</Cd></LclInstrm><SeqTp>OOFF</SeqTp></PmtTpInf><ReqdColltnDt>2013-02-17</ReqdColltnDt><Cdtr><Nm>My Corp</Nm></Cdtr><CdtrAcct><Id><IBAN>FR7030002005500000157845Z02</IBAN></Id><Ccy>EUR</Ccy></CdtrAcct><CdtrAgt><FinInstnId><BIC>SOGEFRPPXXX</BIC></FinInstnId></CdtrAgt><ChrgBr>SLEV</ChrgBr><CdtrSchmeId><Id><PrvtId><Othr><Id /><SchmeNm><Prtry>SEPA</Prtry></SchmeNm></Othr></PrvtId></Id></CdtrSchmeId><DrctDbtTxInf><PmtId><InstrId>Transaction Id 1</InstrId><EndToEndId>paymentInfo/1</EndToEndId></PmtId><InstdAmt Ccy=\"EUR\">23.45</InstdAmt><DrctDbtTx><MndtRltdInf><MndtId>First mandate</MndtId><DtOfSgntr>2012-12-07</DtOfSgntr></MndtRltdInf></DrctDbtTx><DbtrAgt><FinInstnId><BIC>AGRIFRPPXXX</BIC></FinInstnId></DbtrAgt><Dbtr><Nm>THEIR_NAME</Nm></Dbtr><DbtrAcct><Id><IBAN>FR1420041010050500013M02606</IBAN></Id></DbtrAcct><RmtInf><Ustrd>Transaction description</Ustrd></RmtInf></DrctDbtTxInf></PmtInf></CstmrDrctDbtInitn></Document>";
+            "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?><Document xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"urn:iso:std:iso:20022:tech:xsd:pain.008.001.02\"><CstmrDrctDbtInitn><GrpHdr><MsgId>transferID</MsgId><CreDtTm>2013-02-17T22:38:12</CreDtTm><NbOfTxs>1</NbOfTxs><CtrlSum>23.45</CtrlSum><InitgPty><Nm>Me</Nm><Id><OrgId><Othr><Id>MyId</Id></Othr></OrgId></Id></InitgPty></GrpHdr><PmtInf><PmtInfId>paymentInfo</PmtInfId><PmtMtd>DD</PmtMtd><NbOfTxs>1</NbOfTxs><CtrlSum>23.45</CtrlSum><PmtTpInf><SvcLvl><Cd>SEPA</Cd></SvcLvl><LclInstrm><Cd>CORE</Cd></LclInstrm><SeqTp>OOFF</SeqTp></PmtTpInf><ReqdColltnDt>2013-02-17</ReqdColltnDt><Cdtr><Nm>My Corp</Nm></Cdtr><CdtrAcct><Id><IBAN>FR7030002005500000157845Z02</IBAN></Id><Ccy>EUR</Ccy></CdtrAcct><CdtrAgt><FinInstnId><BIC>SOGEFRPPXXX</BIC></FinInstnId></CdtrAgt><ChrgBr>SLEV</ChrgBr><CdtrSchmeId><Id><PrvtId><Othr><Id /><SchmeNm><Prtry>SEPA</Prtry></SchmeNm></Othr></PrvtId></Id></CdtrSchmeId><DrctDbtTxInf><PmtId><InstrId>Transaction Id 1</InstrId><EndToEndId>paymentInfo/1</EndToEndId></PmtId><InstdAmt Ccy=\"EUR\">23.45</InstdAmt><DrctDbtTx><MndtRltdInf><MndtId>First mandate</MndtId><DtOfSgntr>2012-12-07</DtOfSgntr></MndtRltdInf></DrctDbtTx><DbtrAgt><FinInstnId><BIC>AGRIFRPPXXX</BIC></FinInstnId></DbtrAgt><Dbtr><Nm>THEIR_NAME</Nm></Dbtr><DbtrAcct><Id><IBAN>FR1420041010050500013M02606</IBAN></Id></DbtrAcct><RmtInf><Ustrd>Transaction description</Ustrd></RmtInf></DrctDbtTxInf></PmtInf></CstmrDrctDbtInitn></Document>";
 
         private const string MULTIPLE_ROW_RESULT =
             "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?><Document xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"urn:iso:std:iso:20022:tech:xsd:pain.008.001.02\"><CstmrDrctDbtInitn><GrpHdr><MsgId>transferID</MsgId><CreDtTm>2013-02-17T22:38:12</CreDtTm><NbOfTxs>3</NbOfTxs><CtrlSum>63.36</CtrlSum><InitgPty><Nm>Me</Nm></InitgPty></GrpHdr><PmtInf><PmtInfId>paymentInfo</PmtInfId><PmtMtd>DD</PmtMtd><NbOfTxs>3</NbOfTxs><CtrlSum>63.36</CtrlSum><PmtTpInf><SvcLvl><Cd>SEPA</Cd></SvcLvl><LclInstrm><Cd>CORE</Cd></LclInstrm><SeqTp>OOFF</SeqTp></PmtTpInf><ReqdColltnDt>2013-02-18</ReqdColltnDt><Cdtr><Nm>My Corp</Nm></Cdtr><CdtrAcct><Id><IBAN>FR7030002005500000157845Z02</IBAN></Id><Ccy>EUR</Ccy></CdtrAcct><CdtrAgt><FinInstnId><BIC>SOGEFRPPXXX</BIC></FinInstnId></CdtrAgt><ChrgBr>SLEV</ChrgBr><CdtrSchmeId><Id><PrvtId><Othr><Id /><SchmeNm><Prtry>SEPA</Prtry></SchmeNm></Othr></PrvtId></Id></CdtrSchmeId><DrctDbtTxInf><PmtId><InstrId>Transaction Id 1</InstrId><EndToEndId>multiple1</EndToEndId></PmtId><InstdAmt Ccy=\"EUR\">23.45</InstdAmt><DrctDbtTx><MndtRltdInf><MndtId>First mandate</MndtId><DtOfSgntr>2012-12-07</DtOfSgntr></MndtRltdInf></DrctDbtTx><DbtrAgt><FinInstnId><BIC>AGRIFRPPXXX</BIC></FinInstnId></DbtrAgt><Dbtr><Nm>THEIR_NAME</Nm></Dbtr><DbtrAcct><Id><IBAN>FR1420041010050500013M02606</IBAN></Id></DbtrAcct><RmtInf><Ustrd>Transaction description</Ustrd></RmtInf></DrctDbtTxInf><DrctDbtTxInf><PmtId><InstrId>Transaction Id 2</InstrId><EndToEndId>paymentInfo/2</EndToEndId></PmtId><InstdAmt Ccy=\"EUR\">12.56</InstdAmt><DrctDbtTx><MndtRltdInf><MndtId>First mandate</MndtId><DtOfSgntr>2012-12-07</DtOfSgntr></MndtRltdInf></DrctDbtTx><DbtrAgt><FinInstnId><BIC>AGRIFRPPXXX</BIC></FinInstnId></DbtrAgt><Dbtr><Nm>THEIR_NAME</Nm></Dbtr><DbtrAcct><Id><IBAN>FR1420041010050500013M02606</IBAN></Id></DbtrAcct><RmtInf><Ustrd>Transaction description 2</Ustrd></RmtInf></DrctDbtTxInf><DrctDbtTxInf><PmtId><InstrId>Transaction Id 3</InstrId><EndToEndId>paymentInfo/3</EndToEndId></PmtId><InstdAmt Ccy=\"EUR\">27.35</InstdAmt><DrctDbtTx><MndtRltdInf><MndtId /><DtOfSgntr>0001-01-01</DtOfSgntr></MndtRltdInf></DrctDbtTx><DbtrAgt><FinInstnId><BIC>BANK_BIC</BIC></FinInstnId></DbtrAgt><Dbtr><Nm>NAME</Nm></Dbtr><DbtrAcct><Id><IBAN>ACCOUNT_IBAN_SAMPLE</IBAN></Id></DbtrAcct><RmtInf><Ustrd>Transaction description 3</Ustrd></RmtInf></DrctDbtTxInf></PmtInf></CstmrDrctDbtInitn></Document>";
@@ -255,11 +255,10 @@ namespace Perrich.SepaWriter.Test
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException), ExpectedMessage = "schema is not allowed!",
-            MatchType = MessageMatch.Contains)]
         public void ShouldRejectNotAllowedXmlSchema()
         {
-            var transfert = new SepaDebitTransfer { Schema = SepaSchema.Pain00100103 };
+            Assert.That(() => { new SepaDebitTransfer { Schema = SepaSchema.Pain00100103 }; },
+                Throws.TypeOf<ArgumentException>().With.Property("Message").Contains("schema is not allowed!"));
         }
 
         [Test]
@@ -287,8 +286,6 @@ namespace Perrich.SepaWriter.Test
         }
 
         [Test]
-        [ExpectedException(typeof (SepaRuleException), ExpectedMessage = "The creditor is mandatory.",
-            MatchType = MessageMatch.Exact)]
         public void ShouldRejectIfNoCreditor()
         {
             var transfert = new SepaDebitTransfer
@@ -298,27 +295,27 @@ namespace Perrich.SepaWriter.Test
                     InitiatingPartyName = "Me"
                 };
             transfert.AddDebitTransfer(CreateTransaction("Transaction Id 1", 100m, "Transaction description"));
-            transfert.AsXmlString();
+            Assert.That(() => { transfert.AsXmlString(); },
+                Throws.TypeOf<SepaRuleException>().With.Property("Message").EqualTo("The creditor is mandatory."));
+            
         }
 
         [Test]
-        [ExpectedException(typeof (SepaRuleException), ExpectedMessage = "The initial party name is mandatory.",
-            MatchType = MessageMatch.Exact)]
         public void ShouldRejectIfNoInitiatingPartyName()
         {
             SepaDebitTransfer transfert = GetOneTransactionDebitTransfert(100m);
             transfert.InitiatingPartyName = null;
-            transfert.AsXmlString();
+            Assert.That(() => { transfert.AsXmlString(); },
+                Throws.TypeOf<SepaRuleException>().With.Property("Message").EqualTo("The initial party name is mandatory."));
         }
 
         [Test]
-        [ExpectedException(typeof (SepaRuleException), ExpectedMessage = "The message identification is mandatory.",
-            MatchType = MessageMatch.Exact)]
         public void ShouldRejectIfNoMessageIdentification()
         {
             SepaDebitTransfer transfert = GetOneTransactionDebitTransfert(100m);
             transfert.MessageIdentification = null;
-            transfert.AsXmlString();
+            Assert.That(() => { transfert.AsXmlString(); },
+                Throws.TypeOf<SepaRuleException>().With.Property("Message").EqualTo("The message identification is mandatory."));
         }
 
         [Test]
@@ -333,9 +330,6 @@ namespace Perrich.SepaWriter.Test
         }
 
         [Test]
-        [ExpectedException(typeof (SepaRuleException),
-            ExpectedMessage = "At least one transaction is needed in a transfer.",
-            MatchType = MessageMatch.Exact)]
         public void ShouldRejectIfNoTransaction()
         {
             var transfert = new SepaDebitTransfer
@@ -346,44 +340,45 @@ namespace Perrich.SepaWriter.Test
                     Creditor = Creditor
                 };
 
-            transfert.AsXmlString();
+            Assert.That(() => { transfert.AsXmlString(); },
+                Throws.TypeOf<SepaRuleException>().With.Property("Message").EqualTo("At least one transaction is needed in a transfer."));
         }
 
         [Test]
-        [ExpectedException(typeof (SepaRuleException), ExpectedMessage = "Creditor IBAN data are invalid.",
-            MatchType = MessageMatch.Exact)]
         public void ShouldRejectInvalidCreditor()
         {
-            new SepaDebitTransfer {Creditor = new SepaIbanData()};
+            Assert.That(() => { new SepaDebitTransfer { Creditor = new SepaIbanData() }; },
+                Throws.TypeOf<SepaRuleException>().With.Property("Message").EqualTo("Creditor IBAN data are invalid."));            
         }
 
         [Test]
-        [ExpectedException(typeof(SepaRuleException), ExpectedMessage = "Creditor IBAN data are invalid.",
-            MatchType = MessageMatch.Exact)]
         public void ShouldRejectCreditorWithoutBic()
         {
             var iban = (SepaIbanData)Creditor.Clone();
             iban.UnknownBic = true;
-            new SepaDebitTransfer { Creditor = iban };
+            Assert.That(() => { new SepaDebitTransfer { Creditor = iban }; },
+                Throws.TypeOf<SepaRuleException>().With.Property("Message").EqualTo("Creditor IBAN data are invalid."));
+            
         }
 
         [Test]
-        [ExpectedException(typeof (ArgumentNullException), ExpectedMessage = "transfer",
-            MatchType = MessageMatch.Contains)]
         public void ShouldRejectNullTransactionTransfer()
         {
             var transfert = new SepaDebitTransfer();
 
-            transfert.AddDebitTransfer(null);
+            
+            Assert.That(() => { transfert.AddDebitTransfer(null); },
+                Throws.TypeOf<ArgumentNullException>().With.Property("Message").Contains("transfer"));
         }
 
         [Test]
-        [ExpectedException(typeof (SepaRuleException), ExpectedMessage = "must be unique in a transfer",
-            MatchType = MessageMatch.Contains)]
         public void ShouldRejectTwoTransationsWithSameId()
         {
             SepaDebitTransfer transfert = GetOneTransactionDebitTransfert(100m);
-            transfert.AddDebitTransfer(CreateTransaction("Transaction Id 1", 23.45m, "Transaction description 2"));
+            var debit = CreateTransaction("Transaction Id 1", 23.45m, "Transaction description 2");
+
+            Assert.That(() => { transfert.AddDebitTransfer(debit); },
+                Throws.TypeOf<SepaRuleException>().With.Property("Message").Contains("must be unique in a transfer"));
         }
         
         [Test]

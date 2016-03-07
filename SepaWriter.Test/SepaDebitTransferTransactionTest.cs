@@ -78,11 +78,10 @@ namespace Perrich.SepaWriter.Test
         }
 
         [Test]
-        [ExpectedException(typeof(SepaRuleException), ExpectedMessage = "Debtor IBAN data are invalid.",
-            MatchType = MessageMatch.Exact)]
         public void ShouldRejectInvalidDebtor()
         {
-            new SepaDebitTransferTransaction { Debtor = new SepaIbanData() };
+            Assert.That(() => { new SepaDebitTransferTransaction { Debtor = new SepaIbanData() }; },
+                Throws.TypeOf<SepaRuleException>().With.Property("Message").Contains("Debtor IBAN data are invalid."));
         }
 
         [Test]

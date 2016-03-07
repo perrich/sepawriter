@@ -64,11 +64,10 @@ namespace Perrich.SepaWriter.Test
         }
 
         [Test]
-        [ExpectedException(typeof (SepaRuleException), ExpectedMessage = "Creditor IBAN data are invalid.",
-            MatchType = MessageMatch.Exact)]
         public void ShouldRejectInvalidCreditor()
         {
-            new SepaCreditTransferTransaction {Creditor = new SepaIbanData()};
+            Assert.That(() => { new SepaCreditTransferTransaction { Creditor = new SepaIbanData() }; },
+                Throws.TypeOf<SepaRuleException>().With.Property("Message").Contains("Creditor IBAN data are invalid."));            
         }
     }
 }

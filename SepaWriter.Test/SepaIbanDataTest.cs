@@ -117,36 +117,24 @@ namespace Perrich.SepaWriter.Test
         }
 
         [Test]
-        [ExpectedException(typeof (SepaRuleException), ExpectedMessage = "Invalid BIC code.",
-            MatchType = MessageMatch.Exact)]
         public void ShouldRejectBadBic()
         {
-            new SepaIbanData
-                {
-                    Bic = "BIC"
-                };
+            Assert.That(() => { new SepaIbanData { Bic = "BIC" }; },
+                Throws.TypeOf<SepaRuleException>().With.Property("Message").Contains("Null or Invalid length of BIC"));            
         }
 
         [Test]
-        [ExpectedException(typeof (SepaRuleException), ExpectedMessage = "Invalid IBAN code.",
-            MatchType = MessageMatch.Exact)]
         public void ShouldRejectTooLongIban()
         {
-            new SepaIbanData
-                {
-                    Iban = "FR012345678901234567890123456789012"
-                };
+            Assert.That(() => { new SepaIbanData { Iban = "FR012345678901234567890123456789012" }; },
+                Throws.TypeOf<SepaRuleException>().With.Property("Message").Contains("Null or Invalid length of IBAN code"));
         }
 
         [Test]
-        [ExpectedException(typeof (SepaRuleException), ExpectedMessage = "Invalid IBAN code.",
-            MatchType = MessageMatch.Exact)]
         public void ShouldRejectTooShortIban()
         {
-            new SepaIbanData
-                {
-                    Iban = "FR01234567890"
-                };
+            Assert.That(() => { new SepaIbanData { Iban = "FR01234567890" }; },
+                Throws.TypeOf<SepaRuleException>().With.Property("Message").Contains("Null or Invalid length of IBAN code"));
         }
     }
 }

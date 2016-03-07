@@ -93,8 +93,11 @@ namespace Perrich.SepaWriter
             grpHdr.NewElement("NbOfTxs", numberOfTransactions);
             grpHdr.NewElement("CtrlSum", StringUtils.FormatAmount(headerControlSum));
             grpHdr.NewElement("InitgPty").NewElement("Nm", InitiatingPartyName);
-            if (InitiatingPartyId != null)
-                XmlUtils.GetFirstElement(grpHdr, "InitgPty").NewElement("Id", InitiatingPartyId);
+			if (InitiatingPartyId != null) {
+				XmlUtils.GetFirstElement(grpHdr, "InitgPty").
+					NewElement("Id").NewElement("OrgId").
+					NewElement("Othr").NewElement("Id", InitiatingPartyId);
+			}
 
             // Part 2: Payment Information for each Sequence Type.
             foreach (SepaSequenceType seqTp in Enum.GetValues(typeof(SepaSequenceType)))

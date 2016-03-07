@@ -48,7 +48,7 @@ namespace Perrich.SepaWriter
             set
             {
 				if (value == null || (value.Length != 8 && value.Length != 11)) {
-					throw new SepaRuleException(string.Format("Null, or Invalid length of BIC/swift code \"{0}\", must be 8 or 11 chars.", value));
+					throw new SepaRuleException(string.Format("Null or Invalid length of BIC/swift code \"{0}\", must be 8 or 11 chars.", value));
 				}
                 bic = value;
             }
@@ -64,7 +64,7 @@ namespace Perrich.SepaWriter
             set
             {
                 if (value == null || value.Length < 14 || value.Length > 34)
-                    throw new SepaRuleException("Invalid IBAN code, must not be null, and must not be less than 14 or more than 34 characters:"+value);
+                    throw new SepaRuleException(string.Format("Null or Invalid length of IBAN code \"{0}\", must contain between 14 and 34 characters.", value));
                 iban = SpaceRegex.Replace(value, string.Empty);
             }
         }

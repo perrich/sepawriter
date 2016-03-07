@@ -19,11 +19,11 @@ namespace Perrich.SepaWriter.Test.Utils
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException), ExpectedMessage = "Unknown Sequence Type",
-            MatchType = MessageMatch.Contains)]
         public void ShouldRejectUnknownSequenceType()
         {
-            SepaSequenceTypeUtils.SepaSequenceTypeFromString("unknown value");
+            Assert.That(() => { SepaSequenceTypeUtils.SepaSequenceTypeFromString("unknown value"); },
+                Throws.TypeOf<ArgumentException>().With.Property("Message").Contains("Unknown Sequence Type"));
+            
         }
 
         [Test]
