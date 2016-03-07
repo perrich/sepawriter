@@ -12,6 +12,7 @@ namespace Perrich.SepaWriter
         protected SepaIbanData SepaIban;
         private string endToEndId;
         private string remittanceInformation;
+		private string purpose;
 
         /// <summary>
         ///     Create a SEPA Credit transfer transaction
@@ -48,15 +49,12 @@ namespace Perrich.SepaWriter
             }
         }
 
-
-		private string _purpose;
-
 		public string Purpose {
-			get { return _purpose; }
+			get { return purpose; }
 			set {
 				if (value != null && (value.Length < 1 || value.Length > 4))
 					throw new SepaRuleException("Purpose Length must be between 1 and 4 characters.");
-				_purpose = value; 
+				purpose = value; 
 			}
 		}
 
