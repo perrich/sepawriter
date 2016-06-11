@@ -42,8 +42,8 @@ namespace Perrich.SepaWriter
             get { return endToEndId; }
             set
             {
-                if (value == null || value.Length > 30)
-                    throw new SepaRuleException("EndToEndId Length cannot be greater than 30.");
+                if (value == null || value.Length > 35)
+                    throw new SepaRuleException("EndToEndId Length cannot be greater than 35.");
 
                 endToEndId = value;
             }

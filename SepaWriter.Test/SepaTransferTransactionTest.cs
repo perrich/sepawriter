@@ -25,5 +25,12 @@ namespace Perrich.SepaWriter.Test
             Assert.That(() => { new SepaCreditTransferTransaction { Amount = 12.012m }; },
                 Throws.TypeOf<SepaRuleException>().With.Property("Message").Contains("Amount should have at most 2 decimals"));
         }
+
+        [Test]
+        public void ShouldRejectEndToEndIdGreaterThan35()
+        {
+            Assert.That(() => { new SepaCreditTransferTransaction { EndToEndId = "012345678901234567890123456789012345" }; },
+                Throws.TypeOf<SepaRuleException>().With.Property("Message").Contains("cannot be greater than 35"));
+        }
     }
 }
