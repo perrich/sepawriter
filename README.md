@@ -57,13 +57,13 @@ public class MySepaCreditTransfer
 
 Used libraries:
 ---
-- NUnit 3.2.0 for unit tests
+- NUnit 3.4.1 for unit tests
 - Log4net 2.0.5 for log (used in XML validator)
 
 
 License:
 ---
-Copyright 2013-2015 PERRICHOT Florian
+Copyright 2013-2016 PERRICHOT Florian
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
