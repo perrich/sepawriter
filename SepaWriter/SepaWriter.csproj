@@ -44,6 +44,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SepaChargeBearer.cs" />
+    <Compile Include="SepaInstructionForCreditor.cs" />
     <Compile Include="SepaSchema.cs" />
     <Compile Include="Constant.cs" />
     <Compile Include="SepaSequenceType.cs" />
@@ -56,7 +58,9 @@
     <Compile Include="SepaDebitTransferTransaction.cs" />
     <Compile Include="SepaIbanData.cs" />
     <Compile Include="SepaRuleException.cs" />
+    <Compile Include="Utils\InstructionForCreditorCodeUtils.cs" />
     <Compile Include="Utils\SepaSchemaUtils.cs" />
+    <Compile Include="Utils\SepaChargeBearerUtils.cs" />
     <Compile Include="Utils\SepaSequenceTypeUtils.cs" />
     <Compile Include="Utils\StringUtils.cs" />
     <Compile Include="Utils\XmlElementExtension.cs" />

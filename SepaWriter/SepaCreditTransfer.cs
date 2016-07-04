@@ -17,12 +17,25 @@ namespace Perrich.SepaWriter
         public string DebtorAccountCurrency { get; set; }
 
         /// <summary>
+        ///     Is it an international credit transfer?
+        /// </summary>
+        public bool IsInternational { get; set; }
+
+
+        /// <summary>
+        ///     Charger bearer for international credit transfer
+        /// </summary>
+        public SepaChargeBearer ChargeBearer { get; set; }
+
+        /// <summary>
         /// Create a Sepa Credit Transfer using Pain.001.001.03 schema
         /// </summary>
         public SepaCreditTransfer()
         {
             DebtorAccountCurrency = Constant.EuroCurrency;
             schema = SepaSchema.Pain00100103;
+            IsInternational = false;
+            ChargeBearer = SepaChargeBearer.DEBT;
         }
 
         /// <summary>
@@ -100,7 +113,14 @@ namespace Perrich.SepaWriter
             pmtInf.NewElement("PmtMtd", Constant.CreditTransfertPaymentMethod);
             pmtInf.NewElement("NbOfTxs", numberOfTransactions);
             pmtInf.NewElement("CtrlSum", StringUtils.FormatAmount(paymentControlSum));
-            pmtInf.NewElement("PmtTpInf").NewElement("SvcLvl").NewElement("Cd", "SEPA");
+
+            if (IsInternational)
+            {
+                pmtInf.NewElement("PmtTpInf").NewElement("InstrPrty", "NORM");
+            } else
+            {
+                pmtInf.NewElement("PmtTpInf").NewElement("SvcLvl").NewElement("Cd", "SEPA");
+            }
             if (LocalInstrumentCode != null)
                 XmlUtils.GetFirstElement(pmtInf, "PmtTpInf").NewElement("LclInstr")
                         .NewElement("Cd", LocalInstrumentCode);
@@ -122,10 +142,20 @@ namespace Perrich.SepaWriter
 
             var dbtrAcct = pmtInf.NewElement("DbtrAcct");
             dbtrAcct.NewElement("Id").NewElement("IBAN", Debtor.Iban);
-            dbtrAcct.NewElement("Ccy", DebtorAccountCurrency);
+            if (!IsInternational)
+            {
+                dbtrAcct.NewElement("Ccy", DebtorAccountCurrency);
+            }
 
             pmtInf.NewElement("DbtrAgt").NewElement("FinInstnId").NewElement("BIC", Debtor.Bic);
-            pmtInf.NewElement("ChrgBr", "SLEV");
+
+            if (IsInternational)
+            {
+                pmtInf.NewElement("ChrgBr", SepaChargeBearerUtils.SepaChargeBearerToString(ChargeBearer));
+            } else
+            {
+                pmtInf.NewElement("ChrgBr", "SLEV");
+            }
 
             // Part 3: Credit Transfer Transaction Information
             foreach (var transfer in transactions)
@@ -141,7 +171,7 @@ namespace Perrich.SepaWriter
         /// </summary>
         /// <param name="pmtInf">The root nodes for a transaction</param>
         /// <param name="transfer">The transaction to generate</param>
-        private static void GenerateTransaction(XmlElement pmtInf, SepaCreditTransferTransaction transfer)
+        private void GenerateTransaction(XmlElement pmtInf, SepaCreditTransferTransaction transfer)
         {
             var cdtTrfTxInf = pmtInf.NewElement("CdtTrfTxInf");
             var pmtId = cdtTrfTxInf.NewElement("PmtId");
@@ -156,11 +186,26 @@ namespace Perrich.SepaWriter
 
             cdtTrfTxInf.NewElement("CdtrAcct").NewElement("Id").NewElement("IBAN", transfer.Creditor.Iban);
 
-			if (!string.IsNullOrEmpty(transfer.Purpose)) {
+            if (IsInternational && transfer.SepaInstructionForCreditor != null)
+            {
+                var instr = cdtTrfTxInf.NewElement("InstrForCdtrAgt");
+                instr.NewElement("Cd", transfer.SepaInstructionForCreditor.Code);
+                if (!string.IsNullOrEmpty(transfer.SepaInstructionForCreditor.Comment))
+                {
+                    instr.NewElement("InstrInf", transfer.SepaInstructionForCreditor.Comment);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(transfer.Purpose)) {
 				cdtTrfTxInf.NewElement("Purp").NewElement("Cd", transfer.Purpose);
 			}
 
-			if (!string.IsNullOrEmpty(transfer.RemittanceInformation)) {
+            if (IsInternational && !string.IsNullOrEmpty(transfer.RegulatoryReportingCode))
+            {
+                cdtTrfTxInf.NewElement("RgltryRptg").NewElement("Dtls").NewElement("Cd", transfer.RegulatoryReportingCode);
+            }
+
+            if (!string.IsNullOrEmpty(transfer.RemittanceInformation)) {
 				cdtTrfTxInf.NewElement("RmtInf").NewElement("Ustrd", transfer.RemittanceInformation);
 			}
         }

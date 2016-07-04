@@ -1,14 +1,12 @@
-﻿using System;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Perrich.SepaWriter.Utils;
+using System;
 
 namespace Perrich.SepaWriter.Test.Utils
 {
     [TestFixture]
     public class SepaSequenceTypeUtilsTest
     {
-        private const string FirstPart = "012345678";
-
         [Test]
         public void ShouldRetrieveSequenceTypeFromString()
         {

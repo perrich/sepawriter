@@ -62,7 +62,7 @@ namespace Perrich.SepaWriter.Test
             return transfert;
         }
 
-        [TestFixtureTearDown]
+        [OneTimeTearDownAttribute]
         public void Cleanup()
         {
             if (File.Exists(FILENAME))

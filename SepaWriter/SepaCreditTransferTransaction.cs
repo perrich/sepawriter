@@ -19,5 +19,15 @@
                 SepaIban = value;
             }
         }
+        
+        /// <summary>
+        ///     International transfer reporting code
+        /// </summary>
+        public string RegulatoryReportingCode { get; set; }
+
+        /// <summary>
+        ///     International transfer instruction
+        /// </summary>
+        public SepaInstructionForCreditor SepaInstructionForCreditor { get; set; }
     }
 }
