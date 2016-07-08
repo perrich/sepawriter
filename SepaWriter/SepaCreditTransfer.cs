@@ -142,10 +142,7 @@ namespace Perrich.SepaWriter
 
             var dbtrAcct = pmtInf.NewElement("DbtrAcct");
             dbtrAcct.NewElement("Id").NewElement("IBAN", Debtor.Iban);
-            if (!IsInternational)
-            {
-                dbtrAcct.NewElement("Ccy", DebtorAccountCurrency);
-            }
+            dbtrAcct.NewElement("Ccy", DebtorAccountCurrency);
 
             pmtInf.NewElement("DbtrAgt").NewElement("FinInstnId").NewElement("BIC", Debtor.Bic);
 
