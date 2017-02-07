@@ -27,7 +27,7 @@ namespace Perrich.SepaWriter.Test.Utils
             var el = (XmlElement)xml.AppendChild(xml.CreateElement("Document"));
 
             XmlUtils.CreateBic(el, new SepaIbanData { UnknownBic = true});
-            Assert.AreEqual("<FinInstnId><BIC><Othr><Id>NOTPROVIDED</Id></Othr></BIC></FinInstnId>", el.InnerXml);
+            Assert.AreEqual("<FinInstnId><Othr><Id>NOTPROVIDED</Id></Othr</FinInstnId>", el.InnerXml);
         }
     }
 }
