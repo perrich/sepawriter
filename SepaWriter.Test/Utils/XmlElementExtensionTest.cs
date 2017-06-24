@@ -8,23 +8,22 @@ namespace Perrich.SepaWriter.Test.Utils
     [TestFixture]
     public class XmlElementExtensionTest
     {
-        [SetUp]
-        public void Prepare()
-        {
-            document = new XmlDocument();
-            document.AppendChild(document.CreateXmlDeclaration("1.0", Encoding.UTF8.BodyName, "yes"));
-            element = (XmlElement) document.AppendChild(document.CreateElement("Document"));
-        }
+        private const string name = "sample";
+        private const string name2 = "sample2";
+        private const string name3 = "sample3";
+        private const decimal value = 12.5m;
 
-        private XmlDocument document;
-        private XmlElement element;
+        public XmlElement Prepare()
+        {
+            var document = new XmlDocument();
+            document.AppendChild(document.CreateXmlDeclaration("1.0", Encoding.UTF8.BodyName, "yes"));
+            return (XmlElement) document.AppendChild(document.CreateElement("Document"));
+        }
 
         [Test]
         public void ShouldAddMultipleOrderedNewElement()
         {
-            const string name = "sample";
-            const string name2 = "sample2";
-            const string name3 = "sample3";
+            var element = Prepare();
             var el = element.NewElement(name);
             var el2 = element.NewElement(name2);
             var el3 = element.NewElement(name3);
@@ -38,8 +37,7 @@ namespace Perrich.SepaWriter.Test.Utils
         [Test]
         public void ShouldAddNewElementWithAValue()
         {
-            const string name = "sample";
-            const decimal value = 12.5m;
+            var element = Prepare();
             var el = element.NewElement(name, value);
             Assert.AreEqual(name, el.Name);
             Assert.AreEqual(value.ToString(), el.InnerText);
@@ -50,7 +48,7 @@ namespace Perrich.SepaWriter.Test.Utils
         [Test]
         public void ShouldAddNewElementWithoutValue()
         {
-            const string name = "sample";
+            var element = Prepare();
             var el = element.NewElement(name);
             Assert.AreEqual(name, el.Name);
             Assert.IsEmpty(el.InnerText);
@@ -61,7 +59,7 @@ namespace Perrich.SepaWriter.Test.Utils
         [Test]
         public void ShouldAddNewElementExplicitlyWithoutValue()
         {
-            const string name = "sample";
+            var element = Prepare();
             var el = element.NewElement(name, null);
             Assert.AreEqual(name, el.Name);
             Assert.IsEmpty(el.InnerText);
