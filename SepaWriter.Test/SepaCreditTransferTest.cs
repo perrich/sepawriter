@@ -245,7 +245,7 @@ namespace Perrich.SepaWriter.Test
         [Test]
         public void ShouldRejectNotAllowedXmlSchema()
         {
-            Assert.That(() => { var transfert = new SepaCreditTransfer { Schema = SepaSchema.Pain00800102 }; },
+            Assert.That(() => { new SepaCreditTransfer { Schema = SepaSchema.Pain00800102 }; },
                 Throws.TypeOf<ArgumentException>().With.Property("Message").Contains("schema is not allowed!"));
         }
 
