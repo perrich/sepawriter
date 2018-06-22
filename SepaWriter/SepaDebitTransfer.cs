@@ -92,12 +92,27 @@ namespace Perrich.SepaWriter
             grpHdr.NewElement("CreDtTm", StringUtils.FormatDateTime(CreationDate));
             grpHdr.NewElement("NbOfTxs", numberOfTransactions);
             grpHdr.NewElement("CtrlSum", StringUtils.FormatAmount(headerControlSum));
-            grpHdr.NewElement("InitgPty").NewElement("Nm", InitiatingPartyName);
-			if (InitiatingPartyId != null) {
-				XmlUtils.GetFirstElement(grpHdr, "InitgPty").
-					NewElement("Id").NewElement("OrgId").
-					NewElement("Othr").NewElement("Id", InitiatingPartyId);
-			}
+
+            if (InitiatingParty != null)
+            {
+                grpHdr.NewElement("InitgPty");
+
+                if (!string.IsNullOrWhiteSpace(InitiatingParty.Name))
+                {
+                    XmlUtils.GetFirstElement(grpHdr, "InitgPty").
+                        NewElement("Nm", InitiatingParty.Name);
+                }
+
+                if (InitiatingParty.Identification != null)
+                {
+                    var othr = XmlUtils.GetFirstElement(grpHdr, "InitgPty").
+                                            NewElement("Id").NewElement("OrgId").
+                                            NewElement("Othr");
+
+                    othr.NewElement("Id", InitiatingParty.Identification.Id);
+                    othr.NewElement("Issr", InitiatingParty.Identification.Issuer);
+                }
+            }
 
             // Part 2: Payment Information for each Sequence Type.
             foreach (SepaSequenceType seqTp in Enum.GetValues(typeof(SepaSequenceType)))

@@ -43,6 +43,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InitiatingParty.cs" />
+    <Compile Include="OtherOrganisationIdentification.cs" />
+    <Compile Include="SepaBatchBooking.cs" />
     <Compile Include="SepaChargeBearer.cs" />
     <Compile Include="SepaInstructionForCreditor.cs" />
     <Compile Include="SepaSchema.cs" />
@@ -58,6 +61,7 @@
     <Compile Include="SepaIbanData.cs" />
     <Compile Include="SepaRuleException.cs" />
     <Compile Include="Utils\InstructionForCreditorCodeUtils.cs" />
+    <Compile Include="Utils\SepaBatchBookingUtils.cs" />
     <Compile Include="Utils\SepaSchemaUtils.cs" />
     <Compile Include="Utils\SepaChargeBearerUtils.cs" />
     <Compile Include="Utils\SepaSequenceTypeUtils.cs" />

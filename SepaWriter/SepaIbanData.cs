@@ -15,7 +15,9 @@ namespace Perrich.SepaWriter
         private bool withoutBic;
 
         // Regex to find space
-        private static readonly Regex SpaceRegex = new Regex("\\s+", RegexOptions.Compiled); 
+        private static readonly Regex SpaceRegex = new Regex("\\s+", RegexOptions.Compiled);
+
+        public OtherOrganisationIdentification Identification { get; set; }
 
         /// <summary>
         /// The Name of the owner
