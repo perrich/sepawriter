@@ -28,7 +28,7 @@ namespace Perrich.SepaWriter
         public SepaDebitTransfer()
         {
             CreditorAccountCurrency = Constant.EuroCurrency;
-            LocalInstrumentCode = "CORE";
+            LocalInstrument = new LocalInstrument() { Code = "CORE" };
             schema = SepaSchema.Pain00800102;
         }
 
@@ -157,8 +157,6 @@ namespace Perrich.SepaWriter
 
             var pmtInf = XmlUtils.GetFirstElement(xml, "CstmrDrctDbtInitn").NewElement("PmtInf");
             pmtInf.NewElement("PmtInfId", PaymentInfoId ?? MessageIdentification);
-            if (CategoryPurposeCode != null)
-                pmtInf.NewElement("CtgyPurp").NewElement("Cd", CategoryPurposeCode);
 
             pmtInf.NewElement("PmtMtd", Constant.DebitTransfertPaymentMethod);
             pmtInf.NewElement("NbOfTxs", controlNumber);
@@ -166,7 +164,30 @@ namespace Perrich.SepaWriter
 
             var pmtTpInf = pmtInf.NewElement("PmtTpInf");
             pmtTpInf.NewElement("SvcLvl").NewElement("Cd", "SEPA");
-            pmtTpInf.NewElement("LclInstrm").NewElement("Cd", LocalInstrumentCode);
+
+            if (LocalInstrument != null)
+            {
+                var lclInstr = pmtTpInf.NewElement("LclInstr");
+
+                if (!string.IsNullOrWhiteSpace(LocalInstrument.Code))
+                    lclInstr.NewElement("Cd", LocalInstrument.Code);
+
+                if (!string.IsNullOrWhiteSpace(LocalInstrument.Proprietary))
+                    lclInstr.NewElement("Prtry", LocalInstrument.Proprietary);
+            }
+
+            if (CategoryPurpose != null)
+            {
+                var ctgyPurp = pmtTpInf.NewElement("CtgyPurp");
+
+                if (!string.IsNullOrWhiteSpace(CategoryPurpose.Code))
+                    ctgyPurp.NewElement("Cd", CategoryPurpose.Code);
+
+                if (!string.IsNullOrWhiteSpace(CategoryPurpose.Proprietary))
+                    ctgyPurp.NewElement("Prtry", CategoryPurpose.Proprietary);
+            }
+
+            pmtTpInf.NewElement("LclInstrm").NewElement("Cd", LocalInstrument.Code);
             pmtTpInf.NewElement("SeqTp", SepaSequenceTypeUtils.SepaSequenceTypeToString(sqType));
 
             pmtInf.NewElement("ReqdColltnDt", StringUtils.FormatDate(RequestedExecutionDate));

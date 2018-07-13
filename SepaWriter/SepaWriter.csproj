@@ -31,9 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.8\lib\net40-full\log4net.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -43,8 +40,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BranchAndFinancialInstitutionIdentification.cs" />
+    <Compile Include="BranchData.cs" />
+    <Compile Include="FinancialInstitutionIdentification.cs" />
     <Compile Include="InitiatingParty.cs" />
+    <Compile Include="CategoryPurpose.cs" />
+    <Compile Include="LocalInstrument.cs" />
+    <Compile Include="OrganisationIdentification.cs" />
     <Compile Include="OtherOrganisationIdentification.cs" />
+    <Compile Include="Party.cs" />
+    <Compile Include="PartyIdentification.cs" />
+    <Compile Include="PostalAddress.cs" />
     <Compile Include="SepaBatchBooking.cs" />
     <Compile Include="SepaChargeBearer.cs" />
     <Compile Include="SepaInstructionForCreditor.cs" />
@@ -88,9 +94,6 @@
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

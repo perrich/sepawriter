@@ -392,7 +392,7 @@ namespace Perrich.SepaWriter.Test
         public void ShouldUseADefaultLocalInstrumentCode()
         {
             var transfert = new SepaDebitTransfer();
-            Assert.AreEqual("CORE", transfert.LocalInstrumentCode);
+            Assert.AreEqual("CORE", transfert.LocalInstrument?.Code);
         }
     }
 }

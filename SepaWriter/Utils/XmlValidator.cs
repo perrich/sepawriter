@@ -4,7 +4,6 @@ using System.IO;
 using System.Reflection;
 using System.Xml;
 using System.Xml.Schema;
-using log4net;
 
 namespace Perrich.SepaWriter.Utils
 {
@@ -14,8 +13,6 @@ namespace Perrich.SepaWriter.Utils
     /// </summary>
     public class XmlValidator
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(XmlValidator));
-
         private static readonly Dictionary<SepaSchema, XmlValidator> validators = new Dictionary<SepaSchema, XmlValidator>();
 
         /// <summary>
@@ -96,7 +93,7 @@ namespace Perrich.SepaWriter.Utils
             }
             catch (Exception ex)
             {
-                Log.Error("Validation issue due to an exception", ex);
+                //Log.Error("Validation issue due to an exception", ex);
                 result = false;
             }
 
@@ -108,9 +105,9 @@ namespace Perrich.SepaWriter.Utils
             if (e.Severity != XmlSeverityType.Error && e.Severity != XmlSeverityType.Warning) return;
 
             result = false;
-            Log.ErrorFormat("Validation issue at line: {0}, position: {1} \"{2}\"", 
-                e.Exception.LineNumber, e.Exception.LinePosition, 
-                e.Exception.Message);
+            //Log.ErrorFormat("Validation issue at line: {0}, position: {1} \"{2}\"", 
+            //    e.Exception.LineNumber, e.Exception.LinePosition, 
+            //    e.Exception.Message);
         }
     }
 }

@@ -57,7 +57,7 @@ namespace Perrich.SepaWriter.Test
         {
             var transfert = GetEmptyCreditTransfert();
             transfert.InitiatingParty = new InitiatingParty() { Identification = new OtherOrganisationIdentification() { Id = "MyId" } };
-            transfert.LocalInstrumentCode = "MyCode";
+            transfert.LocalInstrument = new LocalInstrument() { Code = "MyCode" };
 
             transfert.AddCreditTransfer(CreateTransaction("Transaction Id 1", amount, "Transaction description"));
             return transfert;
