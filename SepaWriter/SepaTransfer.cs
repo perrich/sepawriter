@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Xml;
 
 namespace Perrich.SepaWriter
@@ -25,21 +26,19 @@ namespace Perrich.SepaWriter
         /// <summary>
         ///     Purpose of the transaction(s)
         /// </summary>
-        public string CategoryPurposeCode { get; set; }
+        public CategoryPurpose CategoryPurpose { get; set; }
 
         /// <summary>
         ///     Creation Date (default is object creation date)
-        /// </summary>
         public DateTime CreationDate { get; set; }
 
-        public string InitiatingPartyId { get; set; }
-
-        public string InitiatingPartyName { get; set; }
+        public InitiatingParty InitiatingParty { get; set; }
+        public BranchAndFinancialInstitutionIdentification ForwardingAgent { get; set; }
 
         /// <summary>
         ///     Local service instrument code
         /// </summary>
-        public string LocalInstrumentCode { get; set; }
+        public LocalInstrument LocalInstrument { get; set; }
 
         /// <summary>
         ///     The Message identifier
@@ -62,7 +61,8 @@ namespace Perrich.SepaWriter
         public SepaSchema Schema
         {
             get { return schema; }
-            set {
+            set
+            {
                 if (!CheckSchema(value))
                     throw new ArgumentException(schema + " schema is not allowed!");
                 schema = value;
@@ -110,6 +110,14 @@ namespace Perrich.SepaWriter
             GenerateXml().Save(filename);
         }
 
+        /// <summary>
+        ///     Save in an XML Stream
+        /// </summary>
+        public void Save(Stream outStream)
+        {
+            GenerateXml().Save(outStream);
+        }
+        
         /// <summary>
         ///     Add an existing transfer transaction
         /// </summary>
@@ -166,9 +174,18 @@ namespace Perrich.SepaWriter
             {
                 throw new SepaRuleException("The message identification is mandatory.");
             }
-            if (string.IsNullOrEmpty(InitiatingPartyName))
+            if (InitiatingParty == null)
             {
-                throw new SepaRuleException("The initial party name is mandatory.");
+                throw new SepaRuleException("The initial party is mandatory.");
+            }
+            if (string.IsNullOrEmpty(InitiatingParty.Name) && InitiatingParty.Identification == null)
+            {
+                throw new SepaRuleException("The initial party name or identification is mandatory.");
+            }
+            if (InitiatingParty.Identification != null &&
+                (string.IsNullOrEmpty(InitiatingParty.Identification.Id) || string.IsNullOrEmpty(InitiatingParty.Identification.Issuer)))
+            {
+                throw new SepaRuleException("The initial party identification organisation other identification and issuer is mandatory.");
             }
         }
 

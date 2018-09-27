@@ -17,7 +17,7 @@ namespace Perrich.SepaWriter.Test
                 RequestedExecutionDate = new DateTime(2010, 02, 28),
                 MessageIdentification = "REF/789456/CCT001",
                 PaymentInfoId = "LOT123456",
-                InitiatingPartyName = "TOTO Distribution SA",
+                InitiatingParty = new InitiatingParty() { Name = "TOTO Distribution SA" },
                 Debtor = new SepaIbanData
                 {
                     Bic = "BANKFRPP",

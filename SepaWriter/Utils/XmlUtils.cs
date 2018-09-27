@@ -15,7 +15,7 @@ namespace Perrich.SepaWriter.Utils
         /// <returns></returns>
         public static XmlElement GetFirstElement(XmlNode document, string nodeName)
         {
-            return document.SelectSingleNode("//" + nodeName) as XmlElement; 
+            return document.SelectSingleNode("//" + nodeName) as XmlElement;
         }
         /// <summary>
         ///     Create a BIC
@@ -31,7 +31,12 @@ namespace Perrich.SepaWriter.Utils
             }
             else
             {
-                element.NewElement("FinInstnId").NewElement("BIC", iban.Bic);
+
+                if (!string.IsNullOrWhiteSpace(iban.Bic))
+                {
+                    element.NewElement("FinInstnId").NewElement("BIC", iban.Bic);
+                }
+
             }
         }
     }

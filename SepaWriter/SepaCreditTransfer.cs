@@ -21,11 +21,15 @@ namespace Perrich.SepaWriter
         /// </summary>
         public bool IsInternational { get; set; }
 
+        /// <summary>
+        ///     Batch booking for international credit transfer
+        /// </summary>
+        public SepaBatchBooking? BatchBooking { get; set; }
 
         /// <summary>
         ///     Charger bearer for international credit transfer
         /// </summary>
-        public SepaChargeBearer ChargeBearer { get; set; }
+        public SepaChargeBearer? ChargeBearer { get; set; }
 
         /// <summary>
         /// Create a Sepa Credit Transfer using Pain.001.001.03 schema
@@ -35,7 +39,6 @@ namespace Perrich.SepaWriter
             DebtorAccountCurrency = Constant.EuroCurrency;
             schema = SepaSchema.Pain00100103;
             IsInternational = false;
-            ChargeBearer = SepaChargeBearer.DEBT;
         }
 
         /// <summary>
@@ -98,61 +101,116 @@ namespace Perrich.SepaWriter
             grpHdr.NewElement("CreDtTm", StringUtils.FormatDateTime(CreationDate));
             grpHdr.NewElement("NbOfTxs", numberOfTransactions);
             grpHdr.NewElement("CtrlSum", StringUtils.FormatAmount(headerControlSum));
-            grpHdr.NewElement("InitgPty").NewElement("Nm", InitiatingPartyName);
-			
-			if (InitiatingPartyId != null) {
-				XmlUtils.GetFirstElement(grpHdr, "InitgPty").
-					NewElement("Id").NewElement("OrgId").
-					NewElement("Othr").NewElement("Id", InitiatingPartyId);
-			}
+
+            if (InitiatingParty != null)
+            {
+                var initgPty = grpHdr.NewElement("InitgPty");
+
+                if (!string.IsNullOrWhiteSpace(InitiatingParty.Name))
+                {
+                    initgPty.NewElement("Nm", InitiatingParty.Name);
+                }
+
+                if (InitiatingParty.Identification != null)
+                {
+                    var othr = initgPty.NewElement("Id").
+                                        NewElement("OrgId").
+                                        NewElement("Othr");
+
+                    othr.NewElement("Id", InitiatingParty.Identification.Id);
+                    othr.NewElement("Issr", InitiatingParty.Identification.Issuer);
+                }
+            }
+
+            if (ForwardingAgent != null)
+            {
+                var fwdgAgt = grpHdr.NewElement("FwdgAgt");
+
+                if (ForwardingAgent.FinancialInstitutionId != null)
+                {
+                    var finInstnId = fwdgAgt.NewElement("FinInstnId");
+
+                    finInstnId.NewElement("BIC", ForwardingAgent.FinancialInstitutionId.BIC);
+                    finInstnId.NewElement("Nm", ForwardingAgent.FinancialInstitutionId.Name);
+                }
+
+                if (ForwardingAgent.BranchId != null)
+                {
+                    fwdgAgt.NewElement("BrnchId")
+                            .NewElement("Id", ForwardingAgent.BranchId.Id);
+
+                }
+
+            }
 
             // Part 2: Payment Information
             var pmtInf = XmlUtils.GetFirstElement(xml, "CstmrCdtTrfInitn").NewElement("PmtInf");
             pmtInf.NewElement("PmtInfId", PaymentInfoId ?? MessageIdentification);
 
             pmtInf.NewElement("PmtMtd", Constant.CreditTransfertPaymentMethod);
+
+            if (BatchBooking.HasValue)
+                pmtInf.NewElement("BtchBookg", SepaBatchBookingUtils.SepaBatchBookingToString(BatchBooking.Value));
+
             pmtInf.NewElement("NbOfTxs", numberOfTransactions);
             pmtInf.NewElement("CtrlSum", StringUtils.FormatAmount(paymentControlSum));
 
+            var pmtTpInf = pmtInf.NewElement("PmtTpInf");
+
             if (IsInternational)
             {
-                pmtInf.NewElement("PmtTpInf").NewElement("InstrPrty", "NORM");
-            } else
-            {
-                pmtInf.NewElement("PmtTpInf").NewElement("SvcLvl").NewElement("Cd", "SEPA");
+                pmtTpInf.NewElement("InstrPrty", "NORM");
             }
-            if (LocalInstrumentCode != null)
-                XmlUtils.GetFirstElement(pmtInf, "PmtTpInf").NewElement("LclInstr")
-                        .NewElement("Cd", LocalInstrumentCode);
+            else
+            {
+                pmtTpInf.NewElement("SvcLvl").NewElement("Cd", "SEPA");
+            }
 
-			if (CategoryPurposeCode != null) {
-				 XmlUtils.GetFirstElement(pmtInf, "PmtTpInf").
-					 NewElement("CtgyPurp").
-					 NewElement("Cd", CategoryPurposeCode);
-			}
-			
-			pmtInf.NewElement("ReqdExctnDt", StringUtils.FormatDate(RequestedExecutionDate));
-            pmtInf.NewElement("Dbtr").NewElement("Nm", Debtor.Name);
-			if (InitiatingPartyId != null) {
-				XmlUtils.GetFirstElement(pmtInf, "Dbtr").
-					NewElement("Id").NewElement("OrgId").
-					NewElement("Othr").NewElement("Id", InitiatingPartyId);
-			}
+            if (LocalInstrument != null)
+            {
+                var lclInstr = pmtTpInf.NewElement("LclInstr");
 
+                if (!string.IsNullOrWhiteSpace(LocalInstrument.Code))
+                    lclInstr.NewElement("Cd", LocalInstrument.Code);
+
+                if (!string.IsNullOrWhiteSpace(LocalInstrument.Proprietary))
+                    lclInstr.NewElement("Prtry", LocalInstrument.Proprietary);
+            }
+
+            if (CategoryPurpose != null)
+            {
+                var ctgyPurp = pmtTpInf.NewElement("CtgyPurp");
+
+                if (!string.IsNullOrWhiteSpace(CategoryPurpose.Code))
+                    ctgyPurp.NewElement("Cd", CategoryPurpose.Code);
+
+                if (!string.IsNullOrWhiteSpace(CategoryPurpose.Proprietary))
+                    ctgyPurp.NewElement("Prtry", CategoryPurpose.Proprietary);
+            }
+
+            pmtInf.NewElement("ReqdExctnDt", StringUtils.FormatDate(RequestedExecutionDate));
+
+            var dbtr = pmtInf.NewElement("Dbtr");
+
+            dbtr.NewElement("Nm", Debtor.Name);
+
+            if (Debtor.Identification != null && !string.IsNullOrWhiteSpace(Debtor.Identification.Id))
+            {
+                dbtr.NewElement("Id").
+                     NewElement("OrgId").
+                     NewElement("Othr").
+                     NewElement("Id", Debtor.Identification.Id);
+            }
 
             var dbtrAcct = pmtInf.NewElement("DbtrAcct");
             dbtrAcct.NewElement("Id").NewElement("IBAN", Debtor.Iban);
             dbtrAcct.NewElement("Ccy", DebtorAccountCurrency);
 
-            pmtInf.NewElement("DbtrAgt").NewElement("FinInstnId").NewElement("BIC", Debtor.Bic);
+            var dbtrAgt = pmtInf.NewElement("DbtrAgt");
+            dbtrAgt.NewElement("FinInstnId").NewElement("BIC", Debtor.Bic);
 
-            if (IsInternational)
-            {
-                pmtInf.NewElement("ChrgBr", SepaChargeBearerUtils.SepaChargeBearerToString(ChargeBearer));
-            } else
-            {
-                pmtInf.NewElement("ChrgBr", "SLEV");
-            }
+            if (ChargeBearer.HasValue)
+                pmtInf.NewElement("ChrgBr", SepaChargeBearerUtils.SepaChargeBearerToString(ChargeBearer.Value));
 
             // Part 3: Credit Transfer Transaction Information
             foreach (var transfer in transactions)
@@ -171,17 +229,37 @@ namespace Perrich.SepaWriter
         private void GenerateTransaction(XmlElement pmtInf, SepaCreditTransferTransaction transfer)
         {
             var cdtTrfTxInf = pmtInf.NewElement("CdtTrfTxInf");
+
             var pmtId = cdtTrfTxInf.NewElement("PmtId");
+
             if (transfer.Id != null)
                 pmtId.NewElement("InstrId", transfer.Id);
-            pmtId.NewElement("EndToEndId", transfer.EndToEndId);
+
+            if (transfer.EndToEndId != null)
+                pmtId.NewElement("EndToEndId", transfer.EndToEndId);
+
             cdtTrfTxInf.NewElement("Amt")
                        .NewElement("InstdAmt", StringUtils.FormatAmount(transfer.Amount))
                        .SetAttribute("Ccy", transfer.Currency);
-            XmlUtils.CreateBic(cdtTrfTxInf.NewElement("CdtrAgt"), transfer.Creditor);
-            cdtTrfTxInf.NewElement("Cdtr").NewElement("Nm", transfer.Creditor.Name);
 
-            cdtTrfTxInf.NewElement("CdtrAcct").NewElement("Id").NewElement("IBAN", transfer.Creditor.Iban);
+            XmlUtils.CreateBic(cdtTrfTxInf.NewElement("CdtrAgt"), transfer.Creditor);
+
+            var cdtr = cdtTrfTxInf.NewElement("Cdtr");
+
+            if (!string.IsNullOrWhiteSpace(transfer.Creditor.Name))
+                cdtr.NewElement("Nm", transfer.Creditor.Name);
+
+            if (transfer.Creditor.Identification != null && !string.IsNullOrWhiteSpace(transfer.Creditor.Identification.Id))
+            {
+                cdtr.NewElement("Id").
+                         NewElement("PrvtId").
+                         NewElement("Othr").
+                         NewElement("Id", transfer.Creditor.Identification.Id);
+            }
+
+            var cdtrAcct = cdtTrfTxInf.NewElement("CdtrAcct");
+
+            cdtrAcct.NewElement("Id").NewElement("IBAN", transfer.Creditor.Iban);
 
             if (IsInternational && transfer.SepaInstructionForCreditor != null)
             {
@@ -193,18 +271,20 @@ namespace Perrich.SepaWriter
                 }
             }
 
-            if (!string.IsNullOrEmpty(transfer.Purpose)) {
-				cdtTrfTxInf.NewElement("Purp").NewElement("Cd", transfer.Purpose);
-			}
+            if (!string.IsNullOrEmpty(transfer.Purpose))
+            {
+                cdtTrfTxInf.NewElement("Purp").NewElement("Cd", transfer.Purpose);
+            }
 
             if (IsInternational && !string.IsNullOrEmpty(transfer.RegulatoryReportingCode))
             {
                 cdtTrfTxInf.NewElement("RgltryRptg").NewElement("Dtls").NewElement("Cd", transfer.RegulatoryReportingCode);
             }
 
-            if (!string.IsNullOrEmpty(transfer.RemittanceInformation)) {
-				cdtTrfTxInf.NewElement("RmtInf").NewElement("Ustrd", transfer.RemittanceInformation);
-			}
+            if (!string.IsNullOrEmpty(transfer.RemittanceInformation))
+            {
+                cdtTrfTxInf.NewElement("RmtInf").NewElement("Ustrd", transfer.RemittanceInformation);
+            }
         }
         protected override bool CheckSchema(SepaSchema aSchema)
         {

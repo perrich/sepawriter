@@ -28,7 +28,7 @@ namespace Perrich.SepaWriter
         public SepaDebitTransfer()
         {
             CreditorAccountCurrency = Constant.EuroCurrency;
-            LocalInstrumentCode = "CORE";
+            LocalInstrument = new LocalInstrument() { Code = "CORE" };
             schema = SepaSchema.Pain00800102;
         }
 
@@ -92,12 +92,27 @@ namespace Perrich.SepaWriter
             grpHdr.NewElement("CreDtTm", StringUtils.FormatDateTime(CreationDate));
             grpHdr.NewElement("NbOfTxs", numberOfTransactions);
             grpHdr.NewElement("CtrlSum", StringUtils.FormatAmount(headerControlSum));
-            grpHdr.NewElement("InitgPty").NewElement("Nm", InitiatingPartyName);
-			if (InitiatingPartyId != null) {
-				XmlUtils.GetFirstElement(grpHdr, "InitgPty").
-					NewElement("Id").NewElement("OrgId").
-					NewElement("Othr").NewElement("Id", InitiatingPartyId);
-			}
+
+            if (InitiatingParty != null)
+            {
+                grpHdr.NewElement("InitgPty");
+
+                if (!string.IsNullOrWhiteSpace(InitiatingParty.Name))
+                {
+                    XmlUtils.GetFirstElement(grpHdr, "InitgPty").
+                        NewElement("Nm", InitiatingParty.Name);
+                }
+
+                if (InitiatingParty.Identification != null)
+                {
+                    var othr = XmlUtils.GetFirstElement(grpHdr, "InitgPty").
+                                            NewElement("Id").NewElement("OrgId").
+                                            NewElement("Othr");
+
+                    othr.NewElement("Id", InitiatingParty.Identification.Id);
+                    othr.NewElement("Issr", InitiatingParty.Identification.Issuer);
+                }
+            }
 
             // Part 2: Payment Information for each Sequence Type.
             foreach (SepaSequenceType seqTp in Enum.GetValues(typeof(SepaSequenceType)))
@@ -142,8 +157,6 @@ namespace Perrich.SepaWriter
 
             var pmtInf = XmlUtils.GetFirstElement(xml, "CstmrDrctDbtInitn").NewElement("PmtInf");
             pmtInf.NewElement("PmtInfId", PaymentInfoId ?? MessageIdentification);
-            if (CategoryPurposeCode != null)
-                pmtInf.NewElement("CtgyPurp").NewElement("Cd", CategoryPurposeCode);
 
             pmtInf.NewElement("PmtMtd", Constant.DebitTransfertPaymentMethod);
             pmtInf.NewElement("NbOfTxs", controlNumber);
@@ -151,7 +164,30 @@ namespace Perrich.SepaWriter
 
             var pmtTpInf = pmtInf.NewElement("PmtTpInf");
             pmtTpInf.NewElement("SvcLvl").NewElement("Cd", "SEPA");
-            pmtTpInf.NewElement("LclInstrm").NewElement("Cd", LocalInstrumentCode);
+
+            if (LocalInstrument != null)
+            {
+                var lclInstr = pmtTpInf.NewElement("LclInstr");
+
+                if (!string.IsNullOrWhiteSpace(LocalInstrument.Code))
+                    lclInstr.NewElement("Cd", LocalInstrument.Code);
+
+                if (!string.IsNullOrWhiteSpace(LocalInstrument.Proprietary))
+                    lclInstr.NewElement("Prtry", LocalInstrument.Proprietary);
+            }
+
+            if (CategoryPurpose != null)
+            {
+                var ctgyPurp = pmtTpInf.NewElement("CtgyPurp");
+
+                if (!string.IsNullOrWhiteSpace(CategoryPurpose.Code))
+                    ctgyPurp.NewElement("Cd", CategoryPurpose.Code);
+
+                if (!string.IsNullOrWhiteSpace(CategoryPurpose.Proprietary))
+                    ctgyPurp.NewElement("Prtry", CategoryPurpose.Proprietary);
+            }
+
+            pmtTpInf.NewElement("LclInstrm").NewElement("Cd", LocalInstrument.Code);
             pmtTpInf.NewElement("SeqTp", SepaSequenceTypeUtils.SepaSequenceTypeToString(sqType));
 
             pmtInf.NewElement("ReqdColltnDt", StringUtils.FormatDate(RequestedExecutionDate));
