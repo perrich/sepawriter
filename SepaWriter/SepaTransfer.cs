@@ -193,10 +193,6 @@ namespace Perrich.SepaWriter
             {
                 throw new SepaRuleException("The message identification is mandatory.");
             }
-            //if (string.IsNullOrEmpty(InitiatingPartyName))
-            //{
-            //    throw new SepaRuleException("The initial party name is mandatory.");
-            //}
         }
 
         /// <summary>
