@@ -12,10 +12,12 @@ namespace Perrich.SepaWriter
         private string bic;
         private string iban;
         private string name;
+        private SepaPostalAddress address;
+        private SepaPostalAddress agentAddress;
         private bool withoutBic;
 
         // Regex to find space
-        private static readonly Regex SpaceRegex = new Regex("\\s+", RegexOptions.Compiled); 
+        private static readonly Regex SpaceRegex = new Regex("\\s+", RegexOptions.Compiled);
 
         /// <summary>
         /// The Name of the owner
@@ -26,6 +28,28 @@ namespace Perrich.SepaWriter
             set
             {
                 name = StringUtils.GetLimitedString(value, 70);
+            }
+        }
+
+        public SepaPostalAddress Address
+        {
+            get { return address; }
+            set
+            {
+                if (!value.IsValid)
+                    throw new SepaRuleException("Iban Address data is invalid.");
+                address = value;
+            }
+        }
+
+        public SepaPostalAddress AgentAddress
+        {
+            get { return agentAddress; }
+            set
+            {
+                if (!value.IsValid)
+                    throw new SepaRuleException("Iban Address data is invalid.");
+                agentAddress = value;
             }
         }
 
@@ -86,5 +110,15 @@ namespace Perrich.SepaWriter
         {
             return MemberwiseClone();
         }
+    }
+
+    public enum PostalAddressType
+    {
+        ADDR,
+        PBOX,
+        HOME,
+        BIZZ,
+        MLTO,
+        DLVY
     }
 }

@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="SepaChargeBearer.cs" />
     <Compile Include="SepaInstructionForCreditor.cs" />
+    <Compile Include="SepaPostalAddress.cs" />
     <Compile Include="SepaSchema.cs" />
     <Compile Include="Constant.cs" />
     <Compile Include="SepaSequenceType.cs" />

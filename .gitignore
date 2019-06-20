@@ -12,3 +12,4 @@
 
 .sonar
 /TestResults
+/packages
