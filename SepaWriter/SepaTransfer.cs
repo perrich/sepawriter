@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Xml;
+using Perrich.SepaWriter.Utils;
 
 namespace Perrich.SepaWriter
 {
@@ -151,6 +152,32 @@ namespace Perrich.SepaWriter
                 throw new SepaRuleException("End to End Id '" + endToEndId + "' must be unique in a transfer.");
             }
         }
+        
+        protected void AddPostalAddressElements(XmlElement pmtInf, string existingElementKey, SepaPostalAddress address)
+        {
+            var pstlAdr = XmlUtils.GetFirstElement(pmtInf, existingElementKey).NewElement("PstlAdr");
+            if (address.AddressType.HasValue)
+                pstlAdr.NewElement("AdrTp", address.AddressType.ToString());
+            if (!String.IsNullOrEmpty(address.Dept))
+                pstlAdr.NewElement("Dept", address.Dept);
+            if (!String.IsNullOrEmpty(address.SubDept))
+                pstlAdr.NewElement("SubDept", address.SubDept);
+            if (!String.IsNullOrEmpty(address.StrtNm))
+                pstlAdr.NewElement("StrtNm", address.StrtNm);
+            if (!String.IsNullOrEmpty(address.BldgNb))
+                pstlAdr.NewElement("BldgNb", address.BldgNb);
+            if (!String.IsNullOrEmpty(address.PstCd))
+                pstlAdr.NewElement("PstCd", address.PstCd);
+            if (!String.IsNullOrEmpty(address.TwnNm))
+                pstlAdr.NewElement("TwnNm", address.TwnNm);
+            if (!String.IsNullOrEmpty(address.CtrySubDvsn))
+                pstlAdr.NewElement("CtrySubDvsn", address.CtrySubDvsn);
+            if (!String.IsNullOrEmpty(address.Ctry))
+                pstlAdr.NewElement("Ctry", address.Ctry);
+            if (address.AdrLine != null)
+                foreach (var line in address.AdrLine)
+                    pstlAdr.NewElement("AdrLine", line);
+        }
 
         /// <summary>
         ///     Is Mandatory data are set ? In other case a SepaRuleException will be thrown
@@ -165,10 +192,6 @@ namespace Perrich.SepaWriter
             if (string.IsNullOrEmpty(MessageIdentification))
             {
                 throw new SepaRuleException("The message identification is mandatory.");
-            }
-            if (string.IsNullOrEmpty(InitiatingPartyName))
-            {
-                throw new SepaRuleException("The initial party name is mandatory.");
             }
         }
 
