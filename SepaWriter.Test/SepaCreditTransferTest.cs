@@ -277,12 +277,12 @@ namespace Perrich.SepaWriter.Test
         }
 
         [Test]
-        public void ShouldRejectIfNoInitiatingPartyName()
+        public void ShouldAcceptNoInitiatingPartyName()
         {
             SepaCreditTransfer transfert = GetOneTransactionCreditTransfert(100m);
             transfert.InitiatingPartyName = null;
 
-            Assert.That(() => { transfert.AsXmlString(); }, Throws.TypeOf<SepaRuleException>().With.Property("Message").EqualTo("The initial party name is mandatory."));
+            Assert.DoesNotThrow(() => { transfert.AsXmlString(); });
         }
 
         [Test]
