@@ -161,7 +161,12 @@ namespace Perrich.SepaWriter
             dbtrAcct.NewElement("Id").NewElement("IBAN", Creditor.Iban);
             dbtrAcct.NewElement("Ccy", CreditorAccountCurrency);
 
-            pmtInf.NewElement("CdtrAgt").NewElement("FinInstnId").NewElement("BIC", Creditor.Bic);
+            var finInstnId = pmtInf.NewElement("CdtrAgt").NewElement("FinInstnId");
+            finInstnId.NewElement("BIC", Creditor.Bic);
+            if (Creditor.AgentAddress != null)
+            {
+                XmlUtils.AddPostalAddressElements(finInstnId, Creditor.AgentAddress);
+            }
             pmtInf.NewElement("ChrgBr", "SLEV");
 
             var othr = pmtInf.NewElement("CdtrSchmeId").NewElement("Id")
