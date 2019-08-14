@@ -157,9 +157,9 @@ namespace Perrich.SepaWriter
             pmtInf.NewElement("ReqdColltnDt", StringUtils.FormatDate(RequestedExecutionDate));
             pmtInf.NewElement("Cdtr").NewElement("Nm", Creditor.Name);
 
-            var dbtrAcct = pmtInf.NewElement("CdtrAcct");
-            dbtrAcct.NewElement("Id").NewElement("IBAN", Creditor.Iban);
-            dbtrAcct.NewElement("Ccy", CreditorAccountCurrency);
+            var cdtrAcct = pmtInf.NewElement("CdtrAcct");
+            cdtrAcct.NewElement("Id").NewElement("IBAN", Creditor.Iban);
+            cdtrAcct.NewElement("Ccy", CreditorAccountCurrency);
 
             var finInstnId = pmtInf.NewElement("CdtrAgt").NewElement("FinInstnId");
             finInstnId.NewElement("BIC", Creditor.Bic);
@@ -198,7 +198,20 @@ namespace Perrich.SepaWriter
 
             XmlUtils.CreateBic(cdtTrfTxInf.NewElement("DbtrAgt"), transfer.Debtor);
             cdtTrfTxInf.NewElement("Dbtr").NewElement("Nm", transfer.Debtor.Name);
-            cdtTrfTxInf.NewElement("DbtrAcct").NewElement("Id").NewElement("IBAN", transfer.Debtor.Iban);
+
+            var dbtrAcctId = cdtTrfTxInf.NewElement("DbtrAcct");
+            if (!String.IsNullOrEmpty(transfer.Debtor.Iban))
+            {
+                dbtrAcctId.NewElement("IBAN", transfer.Debtor.Iban);
+            } 
+            else if (!String.IsNullOrEmpty(transfer.Debtor.Other))
+            {
+                dbtrAcctId.NewElement("Othr").NewElement("Id", transfer.Debtor.Other);
+            }
+            else
+            {
+                throw new Exception("Need either IBAN or Other>Id for DbtrAcct.");
+            }
 
             if (!string.IsNullOrEmpty(transfer.RemittanceInformation))
                 cdtTrfTxInf.NewElement("RmtInf").NewElement("Ustrd", transfer.RemittanceInformation);

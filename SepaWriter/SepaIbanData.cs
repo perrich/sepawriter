@@ -9,6 +9,7 @@ namespace Perrich.SepaWriter
     /// </summary>
     public class SepaIbanData : ICloneable
     {
+        private string other;
         private string bic;
         private string iban;
         private string name;
@@ -87,9 +88,24 @@ namespace Perrich.SepaWriter
             get { return iban; }
             set
             {
-                if (value == null || value.Length < 14 || value.Length > 34)
+                if (value != null && (value.Length < 14 || value.Length > 34))
                     throw new SepaRuleException(string.Format("Null or Invalid length of IBAN code \"{0}\", must contain between 14 and 34 characters.", value));
                 iban = SpaceRegex.Replace(value, string.Empty);
+            }
+        }
+
+        /// <summary>
+        /// Represents the Id only. SchmeNm and Issr are not presently accounted for
+        /// </summary>
+        public string Other
+        {
+            get { return other; }
+            
+            set
+            {
+                if (value != null && value.Length > 34)
+                    throw new SepaRuleException(string.Format("Invalid length of Othr > Id \"{0}\", must contain a maximum of 34 characters.", value));
+                other = SpaceRegex.Replace(value, string.Empty);
             }
         }
 
@@ -99,7 +115,7 @@ namespace Perrich.SepaWriter
         /// <returns></returns>
         public bool IsValid
         {
-            get { return (!string.IsNullOrEmpty(bic) || withoutBic) && !string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(iban); }
+            get { return (!string.IsNullOrEmpty(bic) || withoutBic) && !string.IsNullOrEmpty(name) && (!string.IsNullOrEmpty(iban) || !string.IsNullOrEmpty(other)); }
         }
 
         /// <summary>

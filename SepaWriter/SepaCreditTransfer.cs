@@ -47,7 +47,7 @@ namespace Perrich.SepaWriter
             get { return SepaIban; }
             set
             {
-                if (!value.IsValid || value.UnknownBic)
+                if (!value.IsValid)
                     throw new SepaRuleException("Debtor IBAN data are invalid.");
                 SepaIban = value;
             }
@@ -154,7 +154,19 @@ namespace Perrich.SepaWriter
 			}
 
             var dbtrAcct = pmtInf.NewElement("DbtrAcct");
-            dbtrAcct.NewElement("Id").NewElement("IBAN", Debtor.Iban);
+            var dbtrAcctId = dbtrAcct.NewElement("Id");
+            if (!String.IsNullOrEmpty(Debtor.Iban))
+            {
+                dbtrAcctId.NewElement("IBAN", Debtor.Iban);
+            } 
+            else if (!String.IsNullOrEmpty(Debtor.Other))
+            {
+                dbtrAcctId.NewElement("Othr").NewElement("Id", Debtor.Other);
+            }
+            else
+            {
+                throw new Exception("Need either IBAN or Other>Id for DbtrAcct.");
+            }
             dbtrAcct.NewElement("Ccy", DebtorAccountCurrency);
 
             var finInstnId = pmtInf.NewElement("DbtrAgt").NewElement("FinInstnId");
