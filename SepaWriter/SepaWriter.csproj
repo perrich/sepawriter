@@ -25,11 +25,4 @@
     <EmbeddedResource Include="Xsd\pain.008.001.03.xsd" />
   </ItemGroup>
 
-  <PropertyGroup>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <RootNamespace>Perrich.SepaWriter</RootNamespace>
-    <AssemblyName>Perrich.SepaWriter</AssemblyName>
-  </PropertyGroup>
-
 </Project>
