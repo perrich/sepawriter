@@ -1,4 +1,4 @@
-SepaWriter
+SepaWriter Net Standard
 ===
 
 Manage SEPA (Single Euro Payments Area) Credit and Debit Transfer for SEPA or international order.
