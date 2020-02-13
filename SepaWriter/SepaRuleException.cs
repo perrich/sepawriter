@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace Perrich.SepaWriter
+namespace SepaWriter
 {
     /// <summary>
     /// The Exception that is thrown when a SEPA field rule is not validated.

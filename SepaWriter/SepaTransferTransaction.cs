@@ -1,7 +1,7 @@
 ﻿using System;
-using Perrich.SepaWriter.Utils;
+using SepaWriter.Utils;
 
-namespace Perrich.SepaWriter
+namespace SepaWriter
 {
     /// <summary>
     ///     Base of a SEPA Transfer Transaction

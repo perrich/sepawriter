@@ -1,8 +1,8 @@
-﻿using NUnit.Framework;
-using Perrich.SepaWriter.Utils;
-using System;
+﻿using System;
+using NUnit.Framework;
+using SepaWriter.Utils;
 
-namespace Perrich.SepaWriter.Test.Utils
+namespace SepaWriter.Test.Utils
 {
     [TestFixture]
     public class SepaSequenceTypeUtilsTest

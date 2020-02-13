@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Perrich.SepaWriter.Utils
+namespace SepaWriter.Utils
 {
     public static class SepaChargeBearerUtils
     {
