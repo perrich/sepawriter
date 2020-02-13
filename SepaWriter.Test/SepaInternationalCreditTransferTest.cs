@@ -1,7 +1,7 @@
 ﻿using System;
 using NUnit.Framework;
 
-namespace Perrich.SepaWriter.Test
+namespace SepaWriter.Test
 {
     [TestFixture]
     public class SepaInternationalCreditTransferTest

@@ -1,4 +1,4 @@
-﻿namespace Perrich.SepaWriter
+﻿namespace SepaWriter
 {
     /// <summary>
     /// Some Constants...

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Text;
 using System.Xml;
-using Perrich.SepaWriter.Utils;
+using SepaWriter.Utils;
 
-namespace Perrich.SepaWriter
+namespace SepaWriter
 {
     /// <summary>
     ///     Manage SEPA (Single Euro Payments Area) CreditTransfer for SEPA or international order.

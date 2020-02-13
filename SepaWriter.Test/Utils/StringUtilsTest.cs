@@ -1,8 +1,8 @@
 ﻿using System;
 using NUnit.Framework;
-using Perrich.SepaWriter.Utils;
+using SepaWriter.Utils;
 
-namespace Perrich.SepaWriter.Test.Utils
+namespace SepaWriter.Test.Utils
 {
     [TestFixture]
     public class StringUtilsTest
