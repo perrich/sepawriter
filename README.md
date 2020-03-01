@@ -1,4 +1,4 @@
-SepaWriter Net Standard
+SepaWriter
 ===
 
 Manage SEPA (Single Euro Payments Area) Credit and Debit Transfer for SEPA or international order.
@@ -57,13 +57,13 @@ public class MySepaCreditTransfer
 
 Used libraries:
 ---
-- NUnit 3.7.1 for unit tests
+- NUnit 3.12.0 for unit tests
 - Log4net 2.0.8 for log (used in XML validator)
 
 
 License:
 ---
-Copyright 2013-2017 PERRICHOT Florian
+Copyright 2013-2020 PERRICHOT Florian
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.

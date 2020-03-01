@@ -28,7 +28,7 @@
   <PropertyGroup>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <RootNamespace>Perrich.SepaWriter</RootNamespace>
+    <RootNamespace>SepaWriter</RootNamespace>
     <AssemblyName>Perrich.SepaWriter</AssemblyName>
   </PropertyGroup>
 
