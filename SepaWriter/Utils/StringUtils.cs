@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Perrich.SepaWriter.Utils
+namespace SepaWriter.Utils
 {
     /// <summary>
     ///     Some Utilities to manage strings
@@ -68,7 +68,7 @@ namespace Perrich.SepaWriter.Utils
                 return str;
 
             // remove french "accent"
-            byte[] bytes = Encoding.GetEncoding(1251).GetBytes(str);
+            byte[] bytes = CodePagesEncodingProvider.Instance.GetEncoding(1251).GetBytes(str);
             str = Encoding.ASCII.GetString(bytes).ToUpper();
 
             // Remove invalid char

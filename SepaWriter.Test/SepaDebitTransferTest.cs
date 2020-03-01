@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
-using NUnit.Framework;
-using Perrich.SepaWriter.Utils;
 using System.Xml;
+using NUnit.Framework;
+using SepaWriter.Utils;
 
-namespace Perrich.SepaWriter.Test
+namespace SepaWriter.Test
 {
     [TestFixture]
     public class SepaDebitTransferTest
@@ -63,7 +63,7 @@ namespace Perrich.SepaWriter.Test
             return transfert;
         }
 
-        [OneTimeTearDownAttribute]
+        [OneTimeTearDown]
         public void Cleanup()
         {
             if (File.Exists(FILENAME))

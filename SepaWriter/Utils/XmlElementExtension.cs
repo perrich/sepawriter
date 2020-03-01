@@ -1,7 +1,6 @@
-﻿using System;
-using System.Xml;
+﻿using System.Xml;
 
-namespace Perrich.SepaWriter.Utils
+namespace SepaWriter.Utils
 {
     /// <summary>
     /// Extend XmlElement to allow a fluent and easier management

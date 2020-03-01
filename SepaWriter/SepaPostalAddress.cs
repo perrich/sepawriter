@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
 
-namespace Perrich.SepaWriter
+namespace SepaWriter
 {
     public class SepaPostalAddress
     {

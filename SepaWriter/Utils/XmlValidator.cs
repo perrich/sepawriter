@@ -6,7 +6,7 @@ using System.Xml;
 using System.Xml.Schema;
 using log4net;
 
-namespace Perrich.SepaWriter.Utils
+namespace SepaWriter.Utils
 {
     /// <summary>
     ///     Allow to validate XML against the known XSD.
@@ -43,7 +43,7 @@ namespace Perrich.SepaWriter.Utils
         {
             foreach (SepaSchema schema in Enum.GetValues(typeof(SepaSchema)))
             {
-                validators.Add(schema, new XmlValidator("Perrich.SepaWriter.Xsd." + SepaSchemaUtils.SepaSchemaToString(schema) + ".xsd"));
+                validators.Add(schema, new XmlValidator("SepaWriter.Xsd." + SepaSchemaUtils.SepaSchemaToString(schema) + ".xsd"));
             }        
         }
 
