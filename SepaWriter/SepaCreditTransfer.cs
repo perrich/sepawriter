@@ -141,10 +141,11 @@ namespace SepaWriter
 			}
 			
 			pmtInf.NewElement("ReqdExctnDt", StringUtils.FormatDate(RequestedExecutionDate));
-            pmtInf.NewElement("Dbtr").NewElement("Nm", Debtor.Name);
+            var dbtr = pmtInf.NewElement("Dbtr");
+            dbtr.NewElement("Nm", Debtor.Name);
             if (Debtor.Address != null)
             {
-                AddPostalAddressElements(pmtInf, "Dbtr", Debtor.Address);
+                AddPostalAddressElements(dbtr, Debtor.Address);
             }
 			if (InitiatingPartyId != null) {
 				XmlUtils.GetFirstElement(pmtInf, "Dbtr").
@@ -156,10 +157,11 @@ namespace SepaWriter
             dbtrAcct.NewElement("Id").NewElement("IBAN", Debtor.Iban);
             dbtrAcct.NewElement("Ccy", DebtorAccountCurrency);
 
-            pmtInf.NewElement("DbtrAgt").NewElement("FinInstnId").NewElement("BIC", Debtor.Bic);
+            var finInstnId = pmtInf.NewElement("DbtrAgt").NewElement("FinInstnId");
+            finInstnId.NewElement("BIC", Debtor.Bic);
             if (Debtor.AgentAddress != null)
             {
-                AddPostalAddressElements(pmtInf, "FinInstnId", Debtor.AgentAddress);
+                AddPostalAddressElements(finInstnId, Debtor.AgentAddress);
             }
 
             if (IsInternational)
@@ -195,10 +197,11 @@ namespace SepaWriter
                        .NewElement("InstdAmt", StringUtils.FormatAmount(transfer.Amount))
                        .SetAttribute("Ccy", transfer.Currency);
             XmlUtils.CreateBic(cdtTrfTxInf.NewElement("CdtrAgt"), transfer.Creditor);
-            cdtTrfTxInf.NewElement("Cdtr").NewElement("Nm", transfer.Creditor.Name);
+            var cdtr = cdtTrfTxInf.NewElement("Cdtr");
+            cdtr.NewElement("Nm", transfer.Creditor.Name);
             if (transfer.Creditor.Address != null)
             {
-                AddPostalAddressElements(pmtInf, "Cdtr", transfer.Creditor.Address);
+                AddPostalAddressElements(cdtr, transfer.Creditor.Address);
             }
 
             cdtTrfTxInf.NewElement("CdtrAcct").NewElement("Id").NewElement("IBAN", transfer.Creditor.Iban);

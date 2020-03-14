@@ -153,9 +153,9 @@ namespace SepaWriter
             }
         }
         
-        protected void AddPostalAddressElements(XmlElement pmtInf, string existingElementKey, SepaPostalAddress address)
+        protected void AddPostalAddressElements(XmlElement ibanData, SepaPostalAddress address)
         {
-            var pstlAdr = XmlUtils.GetFirstElement(pmtInf, existingElementKey).NewElement("PstlAdr");
+            var pstlAdr = ibanData.NewElement("PstlAdr");
             if (address.AddressType.HasValue)
                 pstlAdr.NewElement("AdrTp", address.AddressType.ToString());
             if (!String.IsNullOrEmpty(address.Dept))
