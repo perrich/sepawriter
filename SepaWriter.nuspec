@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>Perrich.SepaWriter</id>
+    <version>1.0.3.0</version>
+    <title>Perrich.SepaWriter</title>
+    <authors>PERRICHOT Florian</authors>
+    <owners>PERRICHOT Florian</owners>
+    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+	<projectUrl>https://github.com/perrich/sepawriter</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Manage SEPA (Single Euro Payments Area) Credit and Debit Transfer for SEPA or international order.</description>
+    <releaseNotes>Second release.</releaseNotes>
+    <copyright>Copyright 2015-2021</copyright>
+    <tags>Perrich SepaWriter</tags>
+    <dependencies>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="SepaWriter\bin\Release\netstandard2.0\Perrich.SepaWriter.dll" target="lib\netstandard2.0\Perrich.SepaWriter.dll" />
+  </files>
+</package>
