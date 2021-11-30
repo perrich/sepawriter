@@ -13,3 +13,6 @@
 .sonar
 /TestResults
 /packages
+/*.nupkg
+/.nuget
+/.vs
