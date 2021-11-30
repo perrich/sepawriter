@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-
     <IsPackable>false</IsPackable>
 
     <AssemblyName>Perrich.SepaWriter.Test</AssemblyName>
 
     <RootNamespace>Perrich.SepaWriter.Test</RootNamespace>
+
+    <TargetFrameworks>netcoreapp2.2;netcoreapp3.1</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
