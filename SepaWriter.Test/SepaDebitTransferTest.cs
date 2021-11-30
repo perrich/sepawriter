@@ -75,37 +75,39 @@ namespace SepaWriter.Test
         {
             const decimal amount = 23.45m;
 
-            SepaDebitTransfer transfert = GetOneTransactionDebitTransfert(amount);
+            Assert.DoesNotThrow(() => {
+                SepaDebitTransfer transfert = GetOneTransactionDebitTransfert(amount);
 
-            transfert.AddDebitTransfer(new SepaDebitTransferTransaction
-                {
-                    Id = null,
-                    Debtor = new SepaIbanData
-                        {
-                            Bic = "AGRIFRPPXXX",
-                            Iban = "FR1420041010050500013M02606",
-                            Name = "THEIR_NAME"
-                        },
-                    Amount = amount,
-                    RemittanceInformation = "Transaction description 1",
-                    MandateIdentification = "mandate 1",
-                    DateOfSignature = new DateTime(2010, 12, 7),
-                });
+                transfert.AddDebitTransfer(new SepaDebitTransferTransaction
+                    {
+                        Id = null,
+                        Debtor = new SepaIbanData
+                            {
+                                Bic = "AGRIFRPPXXX",
+                                Iban = "FR1420041010050500013M02606",
+                                Name = "THEIR_NAME"
+                            },
+                        Amount = amount,
+                        RemittanceInformation = "Transaction description 1",
+                        MandateIdentification = "mandate 1",
+                        DateOfSignature = new DateTime(2010, 12, 7),
+                    });
 
-            transfert.AddDebitTransfer(new SepaDebitTransferTransaction
-                {
-                    Id = null,
-                    Debtor = new SepaIbanData
-                        {
-                            Bic = "AGRIFRPPXXX",
-                            Iban = "FR1420041010050500013M02606",
-                            Name = "THEIR_NAME"
-                        },
-                    Amount = amount,
-                    RemittanceInformation = "Transaction description 2",
-                    MandateIdentification = "mandate 2",
-                    DateOfSignature = new DateTime(2011, 12, 7),
-                });
+                transfert.AddDebitTransfer(new SepaDebitTransferTransaction
+                    {
+                        Id = null,
+                        Debtor = new SepaIbanData
+                            {
+                                Bic = "AGRIFRPPXXX",
+                                Iban = "FR1420041010050500013M02606",
+                                Name = "THEIR_NAME"
+                            },
+                        Amount = amount,
+                        RemittanceInformation = "Transaction description 2",
+                        MandateIdentification = "mandate 2",
+                        DateOfSignature = new DateTime(2011, 12, 7),
+                    });
+            });
         }
 
         [Test]

@@ -91,7 +91,9 @@ namespace SepaWriter.Utils
 
                 using (var reader = XmlReader.Create(new StringReader(xml), xmlSettings))
                 {
-                    while (reader.Read()); // Read all file
+                    while (reader.Read()) {
+                        // Read all file
+                    }
                 }
             }
             catch (Exception ex)
